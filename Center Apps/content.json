@@ -1,0 +1,196 @@
+{
+  "home": {
+    "title": "MoonShots",
+    "subtitlePrefix": "$100 Billion in realized",
+    "subtitleSuffix": "customer value by 2035",
+    "shareButtonText": "Share",
+    "pathCards": [
+      {
+        "title": "What it means for you",
+        "subtitle": "Understand the mission"
+      },
+      {
+        "title": "Why it matters for you",
+        "subtitle": "Discover the impact"
+      },
+      {
+        "title": "How you get there",
+        "subtitle": "Explore the roadmap"
+      }
+    ]
+  },
+  "what": {
+    "pathTitle": "What is 100 × 35?",
+    "breadcrumb": "The what",
+    "screen1": {
+      "headline": "What is 100 x 35?",
+      "mainContent": "Cognite will deliver $100 Billion of realized customer value by 2035.",
+      "highlightPhrase": "realized customer value",
+      "cardTitle": "100X35 is not just a slogan",
+      "cardBody": "It's our pledge to you in a world where most AI and data initiatives never reach real business impact. 100 × 35 says that Cognite is in the business of *delivering real business impact* – moving customers beyond pilots to measurable outcomes to their P&L.",
+      "videoId": "_YjpgQIX7is",
+      "videoStartSeconds": "1:00",
+      "videoAutoplay": true,
+      "videoStartTime": 90
+    },
+    "screen2": {
+      "headline": "Real Customer Value",
+      "mainContent": "Track, quantify, and prove value – at scale – across our entire customer base.",
+      "sectionLabel": "Core Principles",
+      "principle1Title": "Your value, not our profit.",
+      "principle1Body": "Impact for our customers' P&L (revenue, cost, risk, sustainability), not just internal metrics or feature usage.",
+      "principle2Title": "Measured, not aspired.",
+      "principle2Body": "We partner with customers to ensure quantifed outcomes, not just \"feel\" the improvement.",
+      "principle3Title": "Realized, not estimated.",
+      "principle3Body": "Value that has actually materialized in the customer's operations, not just in a slide or business case."
+    },
+    "screen3": {
+      "headline": "5 levels to track value",
+      "sectionLabel": "The Journey to Proof",
+      "level1Title": "Value Estimated",
+      "level1Body": "Cognite's initial estimate of what a use case could deliver, used for the business case.",
+      "level2Title": "Customer Agreed",
+      "level2Body": "The customer has reviewed and agreed to the value estimate.",
+      "level3Title": "Value Realized",
+      "level3Body": "Unilateral estimate of value already realized based on early data post-deployment.",
+      "level4Title": "Value Measured",
+      "level4Body": "We formally measure realized value together with the customer. Results are confidential but robust.",
+      "level5Title": "Value Made Public",
+      "level5Body": "The customer agrees to share the measured impact publicly – our gold standard of proof."
+    }
+  },
+  "why": {
+    "pathTitle": "Why 100 × 35 Matters",
+    "breadcrumb": "Why it matters",
+    "screen1": {
+      "headline": "Why 100 × 35 matters",
+      "mainContent": "As AI and data become mission-critical for every industry, the cost of failure is no longer acceptable. Companies need partners who can deliver proven value, not just technology.",
+      "sectionLabel": "The Stark Reality",
+      "trueCostTitle": "The True Cost",
+      "trueCostBody": "This failure rate represents more than wasted investment—it's lost opportunity, competitive disadvantage, and eroded trust in AI/data initiatives.",
+      "bullet1": "Billions in sunk costs with no ROI",
+      "bullet2": "Years of delayed digital transformation",
+      "bullet3": "Team burnout and initiative fatigue",
+      "bullet4": "Loss of competitive advantage"
+    },
+    "screen2": {
+      "headline": "Value assurance is our differentiator",
+      "mainContent": "While the industry struggles with a 95% failure rate, Cognite's value assurance approach ensures every initiative delivers measurable, scalable business impact.",
+      "sectionLabel": "Pillars of Value Assurance",
+      "pillar1From": "Technology-First",
+      "pillar1To": "Value-First",
+      "pillar1Body": "Every decision starts with business impact, not technical capability.",
+      "pillar2From": "Pilot Success",
+      "pillar2To": "Scaled Impact",
+      "pillar2Body": "Success is measured by enterprise-wide adoption, not proof of concept.",
+      "pillar3From": "Vendor Promises",
+      "pillar3To": "Customer Validation",
+      "pillar3Body": "Value is validated by the customer, not claimed by the vendor.",
+      "pillar4From": "Opaque Metrics",
+      "pillar4To": "Transparent KPIs",
+      "pillar4Body": "Clear, measurable, publicly shareable evidence of business impact."
+    },
+    "screen3": {
+      "headline": "Culture Shift",
+      "mainContent": "100 × 35 changes how we think and work internally. It says that \"value\" is not one team's responsibility – it's our shared operating system.",
+      "sectionLabel": "Behavioral Transformation",
+      "item1Title": "In Every Conversation",
+      "item1Body": "Sales, product, and delivery teams now start conversations with value, not features.",
+      "item2Title": "In Project Planning",
+      "item2Body": "Every initiative must define its value story before receiving approval.",
+      "item3Title": "In Performance Reviews",
+      "item3Body": "Success is measured by customer value delivered, not just tasks completed.",
+      "item4Title": "In Celebrations",
+      "item4Body": "We celebrate validated value stories, not just product launches."
+    }
+  },
+  "how": {
+    "pathTitle": "How we get there",
+    "breadcrumb": "How we get there",
+    "screen1": {
+      "headline": "How we reach $100B by 2035",
+      "mainContent": "is achieved through systematic processes, rigorous measurement, and continuous learning.",
+      "sectionLabel": "Key Milestones",
+      "milestone1Title": "Milestone 1",
+      "milestone1Body": "Launch Value Launchpad across all customer engagements. Every new project starts with defined value criteria.",
+      "milestone1Date": "Q1 2024",
+      "milestone2Title": "Milestone 2",
+      "milestone2Body": "Achieve 50+ Level 4 value stories with validated P&L impact. Establish baseline for scaling.",
+      "milestone2Date": "Q3 2025",
+      "milestone3Title": "Milestone 3",
+      "milestone3Body": "Deploy value tracking dashboard company-wide. Real-time visibility into all value stories across levels.",
+      "milestone3Date": "Q4 2028",
+      "milestone4Title": "Milestone 4",
+      "milestone4Body": "Create library of 200+ replicable value blueprints. Enable rapid deployment across industries.",
+      "milestone4Date": "Q2 2032",
+      "milestone5Title": "Milestone 5",
+      "milestone5Body": "Reach $100B in cumulative customer value. Establish Cognite as the definitive value delivery platform.",
+      "milestone5Date": "Dec 2035"
+    },
+    "screen2": {
+      "headline": "It takes all of us",
+      "mainContent": "Every Cogniter has a distinct role to play in 100 × 35. Here's how different roles contribute to unlocking value.",
+      "sectionLabel": "Role Mandates",
+      "roles": [
+        {
+          "title": "Account Executive",
+          "tagline": "The Architect of Value",
+          "body": "Uses the Value Launchpad to frame deals around business outcomes and ensures value is baked into SOWs."
+        },
+        {
+          "title": "Product Manager",
+          "tagline": "The Builder of Value",
+          "body": "Prioritizes features that drive measurable outcomes and gives customers tools to track financial & value levers."
+        },
+        {
+          "title": "Project Manager",
+          "tagline": "The Deliverer of Value",
+          "body": "Runs projects against business goals, not just activity. Ensures milestones reflect impact on the customer's P&L."
+        },
+        {
+          "title": "Engineer / Data Scientist",
+          "tagline": "The Designer of Value",
+          "body": "Turns data and models into outcomes, framing results in terms of business KPIs and real-world decisions."
+        },
+        {
+          "title": "CBE / TAM",
+          "tagline": "The Accelerator of Value",
+          "body": "Monitors adoption and links technical performance back to agreed business outcomes."
+        },
+        {
+          "title": "Marketing",
+          "tagline": "The Storyteller of Value",
+          "body": "Converts Level 5 successes into public stories that prove Cognite's value assurance."
+        },
+        {
+          "title": "P&O Partner",
+          "tagline": "The Enabler of Value Culture",
+          "body": "Recruits and develops talent that thinks in terms of customer value."
+        },
+        {
+          "title": "Finance Partner",
+          "tagline": "The Guardian of Value",
+          "body": "Aligns commercial models with customer success and champions rigorous value measurement."
+        }
+      ]
+    },
+    "screen3": {
+      "headline": "Customer value to date",
+      "subhead": "Progress toward $100B realized customer value by 2035.",
+      "tabOverview": "Overview",
+      "tabCurrentYear": "(current year)",
+      "chartTitleOverview": "Timeline & value",
+      "trackerLabelOverview": "Realized Customer value",
+      "yearsRemainingLabel": "years remaining",
+      "chartTitleYear": "progress",
+      "yearChartSubtitle": "Month-by-month realized customer value ($B). Amber = current month in progress.",
+      "trackerLabelYear": "Realized Customer value",
+      "thisYearLabel": "this year",
+      "valueStart2025": 5,
+      "valueEnd2025": 22,
+      "ytd2026": 7,
+      "ytd2026JanShare": 0.37,
+      "ytd2026FebShare": 0.63
+    }
+  }
+}

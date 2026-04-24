@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cognite MoonShot - Design Exploration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        /* Aura Design System CSS Variables */
+        :root {
+            /* Typography */
+            --font-inter: 'Inter', sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            
+            /* Text Sizes */
+            --text-xs: 12px;
+            --text-sm: 14px;
+            --text-base: 16px;
+            --text-2xl: 24px;
+            
+            /* Line Heights */
+            --leading-14: 14px;
+            --leading-18: 18px;
+            --leading-20: 20px;
+            --leading-28: 28px;
+            
+            /* Letter Spacing */
+            --tracking-tightest: -0.1px;
+            --tracking-tighter: -0.08px;
+            --tracking-tight: -0.04px;
+            --tracking-normal: 0px;
+            
+            /* Spacing Scale */
+            --spacing-4: 4px;
+            --spacing-8: 8px;
+            --spacing-12: 12px;
+            --spacing-16: 16px;
+            --spacing-24: 24px;
+            --spacing-48: 48px;
+            
+            /* Padding */
+            --padding-4: 4px;
+            --padding-6: 6px;
+            --padding-8: 8px;
+            --padding-12: 12px;
+            --padding-16: 16px;
+            
+            /* Margin */
+            --margin-8: 8px;
+            --margin-12: 12px;
+            --margin-16: 16px;
+            --margin-40: 40px;
+            
+            /* Border Radius */
+            --radius-xs: 2px;
+            --radius-sm: 4px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+            --radius-2xl: 16px;
+            
+            /* Colors - Light Mode (default) */
+            --foreground: #111213;
+            --muted-foreground: #5e666d;
+            --card-foreground: #111213;
+            --background: white;
+            --card: #f9fafa;
+            --accent: #f1f2f3;
+            --disabled: #f1f2f3;
+            --border: #e4e6e8;
+            --border-width-1: 1px;
+            
+            /* Decorative Colors */
+            --decorative-background-nordic: #b4f2e5;
+            --decorative-foreground-nordic: #0d4e40;
+            --decorative-background-mountain: #e4e6e8;
+            --decorative-foreground-mountain: #40464a;
+            
+            /* Interactive States */
+            --toggled: #e2e5f4;
+            --toggled-foreground: #32417f;
+            
+            /* Shadows */
+            --shadow-lg: rgba(0, 0, 0, 0.06);
+            --shadow-xl: rgba(0, 0, 0, 0.1);
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: var(--font-inter);
+            color: var(--foreground);
+        }
+        
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .background-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+        
+        .gradient-overlay.visible {
+            opacity: 1;
+        }
+        
+        .ghost-button {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: var(--padding-16) calc(var(--padding-16) * 3);
+            font-size: var(--text-2xl);
+            font-weight: var(--font-weight-medium);
+            font-family: var(--font-inter);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: var(--tracking-tighter);
+        }
+        
+        .ghost-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 0.6),
+                transparent
+            );
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
+            animation: shimmer-top 5s infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .ghost-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 0.6),
+                transparent
+            );
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
+            animation: shimmer-bottom 5s infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @keyframes shimmer-top {
+            0% {
+                left: -100%;
+            }
+            8% {
+                left: 150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+        
+        @keyframes shimmer-bottom {
+            0% {
+                left: -100%;
+            }
+            8% {
+                left: 150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+        
+        .ghost-button:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .ghost-button:hover::before {
+            animation: shimmer-top 3s infinite;
+        }
+        
+        .ghost-button:hover::after {
+            animation: shimmer-bottom 3s infinite;
+        }
+        
+        .home-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        .home-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .home-content.animate-delay-100 {
+            transition-delay: 0.1s;
+        }
+        
+        .home-content.animate-delay-200 {
+            transition-delay: 0.2s;
+        }
+        
+        .home-content.animate-delay-300 {
+            transition-delay: 0.3s;
+        }
+        
+        .home-content.animate-delay-400 {
+            transition-delay: 0.4s;
+        }
+        
+        .home-content.animate-delay-500 {
+            transition-delay: 0.5s;
+        }
+        
+        .home-content.animate-delay-600 {
+            transition-delay: 0.6s;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        /* Parallax animation styles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .animate-delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .animate-delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .animate-delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        .animate-delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        .animate-delay-500 {
+            animation-delay: 0.5s;
+        }
+        
+        .animate-delay-600 {
+            animation-delay: 0.6s;
+        }
+        
+        .animate-delay-700 {
+            animation-delay: 0.7s;
+        }
+        
+        .animate-delay-800 {
+            animation-delay: 0.8s;
+        }
+        
+        .animate-delay-900 {
+            animation-delay: 0.9s;
+        }
+        
+        .animate-delay-1000 {
+            animation-delay: 1.0s;
+        }
+        
+        /* Aura Design System Utility Classes */
+        .aura-h1 {
+            font-family: var(--font-inter);
+            font-size: var(--text-2xl);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--leading-28);
+            letter-spacing: var(--tracking-tightest);
+        }
+        
+        .aura-h3 {
+            font-family: var(--font-inter);
+            font-size: var(--text-base);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--leading-20);
+            letter-spacing: var(--tracking-tighter);
+        }
+        
+        .aura-body {
+            font-family: var(--font-inter);
+            font-size: var(--text-base);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--leading-20);
+            letter-spacing: var(--tracking-tightest);
+        }
+        
+        .aura-body-sm {
+            font-family: var(--font-inter);
+            font-size: var(--text-sm);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--leading-18);
+            letter-spacing: var(--tracking-tight);
+        }
+        
+        .aura-body-xs {
+            font-family: var(--font-inter);
+            font-size: var(--text-xs);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--leading-14);
+            letter-spacing: var(--tracking-tightest);
+        }
+        
+        .aura-label {
+            font-family: var(--font-inter);
+            font-size: var(--text-xs);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--leading-14);
+            letter-spacing: var(--tracking-tighter);
+        }
+        
+        .aura-card {
+            background-color: var(--card);
+            border-radius: var(--radius-lg);
+            padding: var(--padding-16);
+        }
+        
+        .aura-button {
+            font-family: var(--font-inter);
+            font-size: var(--text-sm);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--leading-18);
+            letter-spacing: var(--tracking-normal);
+            border-radius: var(--radius-sm);
+            padding: var(--padding-8);
+        }
+     
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <video 
+            src="video/screen_1.mp4" 
+            autoplay 
+            loop 
+            muted 
+            playsinline 
+            preload="auto"
+            class="background-video"
+            id="bg-video">
+        </video>
+    </div>
+    <div class="gradient-overlay"></div>
+    
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Icon Components
+        const HomeIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 22V12H15V22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const ArrowLeft = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const ArrowRight = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const TargetIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#3B82F6" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="6" stroke="#3B82F6" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="2" fill="#3B82F6"/>
+            </svg>
+        );
+
+        const ShieldIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L4 6V12C4 17.55 7.16 22.74 12 24C16.84 22.74 20 17.55 20 12V6L12 2Z" stroke="#3B82F6" strokeWidth="2" fill="none"/>
+                <path d="M12 12L10 10L8 12L12 16L16 12L14 10L12 12Z" fill="white" fillOpacity="0.8"/>
+            </svg>
+        );
+
+        const RoadIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 18L8 6L12 14L16 2L20 10" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="4" cy="18" r="2" fill="#3B82F6"/>
+                <circle cx="20" cy="10" r="2" fill="#3B82F6"/>
+            </svg>
+        );
+
+        const ArrowRightCard = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        // Header Component - Aura Design System
+        const Header = ({ onHomeClick, showBreadcrumb, breadcrumbText }) => (
+            <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start" style={{ padding: 'var(--spacing-24)' }}>
+                <div className="flex items-center" style={{ gap: 'var(--spacing-16)' }}>
+                    <img src="images/logo.png" alt="Logo" style={{ height: '40px', width: 'auto' }} />
+                    {showBreadcrumb && (
+                        <div style={{ 
+                            color: 'white', 
+                            fontSize: 'var(--text-sm)', 
+                            lineHeight: 'var(--leading-18)',
+                            fontFamily: 'var(--font-inter)',
+                            fontWeight: 'var(--font-weight-regular)',
+                            letterSpacing: 'var(--tracking-tight)'
+                        }}>
+                            <span>Home</span>
+                            <span style={{ color: '#3b82f6' }}> {breadcrumbText}</span>
+                        </div>
+                    )}
+                </div>
+                <button
+                    onClick={onHomeClick}
+                    style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: 'var(--radius-sm)',
+                        backgroundColor: '#2563eb',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s ease'
+                    }}
+                    onMouseEnter={(e) => e.target.style.backgroundColor = '#1d4ed8'}
+                    onMouseLeave={(e) => e.target.style.backgroundColor = '#2563eb'}
+                >
+                    <HomeIcon />
+                </button>
+            </div>
+        );
+
+        // Bottom Navigation Component - Aura Design System
+        const BottomNav = ({ onPrev, onNext, currentPage, totalPages, pathTitle }) => (
+            <div className="fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between backdrop-blur-md" style={{ padding: 'var(--spacing-24)' }}>
+                <button
+                    onClick={onPrev}
+                    disabled={currentPage === 1}
+                    style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: 'none',
+                        cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                        opacity: currentPage === 1 ? 0.3 : 0.8,
+                        backgroundColor: currentPage === 1 ? '#374151' : '#1f2937',
+                        transition: 'background-color 0.2s ease, opacity 0.2s ease',
+                        fontFamily: 'var(--font-inter)'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (currentPage !== 1) e.target.style.backgroundColor = '#374151';
+                    }}
+                    onMouseLeave={(e) => {
+                        if (currentPage !== 1) e.target.style.backgroundColor = '#1f2937';
+                    }}
+                >
+                    <ArrowLeft />
+                </button>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                        color: '#60a5fa', 
+                        fontWeight: 'var(--font-weight-medium)',
+                        fontSize: 'var(--text-sm)',
+                        lineHeight: 'var(--leading-18)',
+                        fontFamily: 'var(--font-inter)',
+                        letterSpacing: 'var(--tracking-normal)'
+                    }}>{pathTitle}</div>
+                    <div style={{ 
+                        color: 'white', 
+                        fontSize: 'var(--text-sm)', 
+                        marginTop: 'var(--spacing-4)',
+                        lineHeight: 'var(--leading-18)',
+                        fontFamily: 'var(--font-inter)',
+                        letterSpacing: 'var(--tracking-tight)'
+                    }}>{currentPage} of {totalPages}</div>
+                </div>
+                <button
+                    onClick={onNext}
+                    disabled={currentPage === totalPages}
+                    style={{
+                        width: '48px',
+                        height: '48px',
+                        borderRadius: 'var(--radius-md)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: 'none',
+                        cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                        opacity: currentPage === totalPages ? 0.5 : 1,
+                        backgroundColor: currentPage === totalPages ? '#374151' : '#2563eb',
+                        transition: 'background-color 0.2s ease, opacity 0.2s ease',
+                        fontFamily: 'var(--font-inter)'
+                    }}
+                    onMouseEnter={(e) => {
+                        if (currentPage !== totalPages) e.target.style.backgroundColor = '#1d4ed8';
+                    }}
+                    onMouseLeave={(e) => {
+                        if (currentPage !== totalPages) e.target.style.backgroundColor = '#2563eb';
+                    }}
+                >
+                    <ArrowRight />
+                </button>
+            </div>
+        );
+
+        // Home Page
+        const HomePage = ({ onPathClick, showContentImmediately = false }) => {
+            const { useState, useEffect } = React;
+            const [contentVisible, setContentVisible] = useState(showContentImmediately);
+            const [buttonVisible, setButtonVisible] = useState(!showContentImmediately);
+            const [isFadingOut, setIsFadingOut] = useState(false);
+            
+            const handleButtonClick = () => {
+                // Hide button first
+                setButtonVisible(false);
+                
+                // First show the gradient overlay
+                const overlay = document.querySelector('.gradient-overlay');
+                if (overlay) {
+                    overlay.classList.add('visible');
+                }
+                
+                // Then show content after a short delay
+                setTimeout(() => {
+                    setContentVisible(true);
+                }, 300);
+            };
+            
+            // Show content immediately if coming from a path
+            useEffect(() => {
+                if (showContentImmediately && !contentVisible) {
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.add('visible');
+                    }
+                    setContentVisible(true);
+                    setButtonVisible(false);
+                } else if (!showContentImmediately && contentVisible) {
+                    // Reset to button state when showContentImmediately becomes false
+                    setIsFadingOut(true);
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
+                    setTimeout(() => {
+                        setContentVisible(false);
+                        setIsFadingOut(false);
+                        setButtonVisible(true);
+                    }, 800);
+                }
+            }, [showContentImmediately]);
+            
+            // Handle fade out when resetting (triggered by parent)
+            useEffect(() => {
+                // This will be triggered when the app resets
+                const handleReset = () => {
+                    setIsFadingOut(true);
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
+                    setTimeout(() => {
+                        setContentVisible(false);
+                        setIsFadingOut(false);
+                        setButtonVisible(true);
+                    }, 800);
+                };
+                
+                // Listen for reset events (we'll trigger this from App component)
+                window.addEventListener('app-reset', handleReset);
+                return () => window.removeEventListener('app-reset', handleReset);
+            }, []);
+            
+            return (
+                <div className="content flex flex-col items-center justify-center min-h-screen px-6 py-12 relative">
+                    <button 
+                        onClick={handleButtonClick}
+                        className="ghost-button"
+                        style={{ 
+                            position: 'absolute',
+                            bottom: '33.33%',
+                            transform: 'translateY(50%)',
+                            opacity: buttonVisible ? 1 : 0,
+                            transition: 'opacity 0.8s ease-out',
+                            pointerEvents: buttonVisible ? 'auto' : 'none',
+                            zIndex: buttonVisible ? 10 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem'
+                        }}
+                    >
+                        <img src="images/logo.png" alt="Logo" className="h-6 w-auto relative z-10" />
+                        <span className="relative z-10">Moonshot</span>
+                    </button>
+                    {contentVisible && (
+                        // Content state: Show all elements with animations
+                        <div style={{ 
+                            opacity: isFadingOut ? 0 : 1, 
+                            transform: isFadingOut ? 'translateY(-30px)' : 'translateY(0)',
+                            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out'
+                        }}>
+                            <div className={`text-center home-content ${contentVisible && !isFadingOut ? 'visible' : ''} animate-delay-100`} style={{ marginBottom: 'var(--spacing-16)' }}>
+                                <div className="flex justify-center" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                    <img src="images/logo.png" alt="Logo" style={{ height: '48px', width: 'auto' }} />
+                                </div>
+                                <h1 className="text-white font-light aura-h1" style={{ marginBottom: 'var(--spacing-4)' }}>Cognite</h1>
+                                <h2 className="text-white font-bold aura-h1">MoonShot</h2>
+                            </div>
+
+                            <div className={`text-center home-content ${contentVisible ? 'visible' : ''} animate-delay-200`} style={{ marginBottom: 'var(--spacing-48)' }}>
+                                <div className="flex items-center justify-center" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                    <span className="text-blue-400 font-bold" style={{ fontSize: 'var(--text-2xl)', fontFamily: 'var(--font-inter)', color: '#60a5fa' }}>100</span>
+                                    <span className="text-white mx-3" style={{ fontSize: 'var(--text-base)' }}>×</span>
+                                    <span className="text-white font-bold" style={{ fontSize: 'var(--text-2xl)', fontFamily: 'var(--font-inter)' }}>35</span>
+                                </div>
+                                <div className="text-center">
+                                    <span className="aura-body" style={{ color: '#60a5fa', fontWeight: 'var(--font-weight-medium)' }}>$100 Billion in realize</span>
+                                    <span className="aura-body ml-2" style={{ color: 'white' }}>customer value by 2035</span>
+                                </div>
+                            </div>
+
+                            <div className={`w-full max-w-2xl home-content ${contentVisible ? 'visible' : ''} animate-delay-300`}>
+                                <div 
+                                    onClick={() => onPathClick('what')}
+                                    className="backdrop-blur-sm cursor-pointer transition-all duration-300 flex items-center justify-between home-content animate-delay-400"
+                                    style={{ 
+                                        opacity: contentVisible ? 1 : 0, 
+                                        transform: contentVisible ? 'translateY(0)' : 'translateY(30px)',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.8)',
+                                        borderRadius: 'var(--radius-2xl)',
+                                        padding: 'var(--spacing-24)',
+                                        marginBottom: 'var(--spacing-16)',
+                                        border: '1px solid rgba(51, 65, 85, 0.5)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(51, 65, 85, 0.8)';
+                                        e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+                                        e.target.style.borderColor = 'rgba(51, 65, 85, 0.5)';
+                                    }}
+                                >
+                                    <div className="flex items-center" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ flexShrink: 0 }}>
+                                            <i className="fas fa-bullseye" style={{ color: '#3b82f6', fontSize: 'var(--text-2xl)' }}></i>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-4)' }}>What is Moonshot?</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(156, 163, 175, 1)' }}>Understand the mission</p>
+                                        </div>
+                                    </div>
+                                    <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                </div>
+                                <div 
+                                    onClick={() => onPathClick('why')}
+                                    className="backdrop-blur-sm cursor-pointer transition-all duration-300 flex items-center justify-between home-content animate-delay-500"
+                                    style={{ 
+                                        opacity: contentVisible ? 1 : 0, 
+                                        transform: contentVisible ? 'translateY(0)' : 'translateY(30px)', 
+                                        transitionDelay: '0.5s',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.8)',
+                                        borderRadius: 'var(--radius-2xl)',
+                                        padding: 'var(--spacing-24)',
+                                        marginBottom: 'var(--spacing-16)',
+                                        border: '1px solid rgba(51, 65, 85, 0.5)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(51, 65, 85, 0.8)';
+                                        e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+                                        e.target.style.borderColor = 'rgba(51, 65, 85, 0.5)';
+                                    }}
+                                >
+                                    <div className="flex items-center" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ flexShrink: 0 }}>
+                                            <i className="fas fa-shield" style={{ color: '#3b82f6', fontSize: 'var(--text-2xl)' }}></i>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-4)' }}>Why it matters</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(156, 163, 175, 1)' }}>Discover the impact</p>
+                                        </div>
+                                    </div>
+                                    <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                </div>
+                                <div 
+                                    onClick={() => onPathClick('how')}
+                                    className="backdrop-blur-sm cursor-pointer transition-all duration-300 flex items-center justify-between home-content animate-delay-600"
+                                    style={{ 
+                                        opacity: contentVisible ? 1 : 0, 
+                                        transform: contentVisible ? 'translateY(0)' : 'translateY(30px)', 
+                                        transitionDelay: '0.6s',
+                                        backgroundColor: 'rgba(30, 41, 59, 0.8)',
+                                        borderRadius: 'var(--radius-2xl)',
+                                        padding: 'var(--spacing-24)',
+                                        marginBottom: 'var(--spacing-16)',
+                                        border: '1px solid rgba(51, 65, 85, 0.5)'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(51, 65, 85, 0.8)';
+                                        e.target.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor = 'rgba(30, 41, 59, 0.8)';
+                                        e.target.style.borderColor = 'rgba(51, 65, 85, 0.5)';
+                                    }}
+                                >
+                                    <div className="flex items-center" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ flexShrink: 0 }}>
+                                            <i className="fas fa-road" style={{ color: '#3b82f6', fontSize: 'var(--text-2xl)' }}></i>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-4)' }}>How we get there</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(156, 163, 175, 1)' }}>Explore the roadmap</p>
+                                        </div>
+                                    </div>
+                                    <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 1
+        const WhatScreen1 = ({ onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="The what" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up" style={{
+                            fontSize: 'var(--text-2xl)',
+                            fontFamily: 'var(--font-inter)',
+                            fontWeight: 'var(--font-weight-medium)',
+                            lineHeight: 'var(--leading-28)',
+                            letterSpacing: 'var(--tracking-tightest)',
+                            marginBottom: 'var(--spacing-24)'
+                        }}>What is MoonShot?</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100" style={{
+                            fontSize: 'var(--text-base)',
+                            fontFamily: 'var(--font-inter)',
+                            fontWeight: 'var(--font-weight-regular)',
+                            lineHeight: 'var(--leading-20)',
+                            letterSpacing: 'var(--tracking-tightest)',
+                            marginBottom: 'var(--spacing-16)'
+                        }}>
+                            MoonShot is our pledge to deliver <span style={{ fontWeight: 'var(--font-weight-medium)' }}>$100 Billion</span> of{' '}
+                            <span style={{ color: '#60a5fa', fontWeight: 'var(--font-weight-medium)' }}>realized customer value</span> by 2035.
+                        </p>
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-star" style={{ color: '#fbbf24', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white" style={{
+                                fontSize: 'var(--text-base)',
+                                fontFamily: 'var(--font-inter)',
+                                fontWeight: 'var(--font-weight-regular)',
+                                lineHeight: 'var(--leading-20)',
+                                letterSpacing: 'var(--tracking-tighter)'
+                            }}>Not just a slogan - It's how we differentiate</p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                            <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ 
+                                        backgroundColor: 'rgba(37, 99, 235, 0.2)', 
+                                        borderRadius: 'var(--radius-md)', 
+                                        padding: 'var(--padding-12)', 
+                                        flexShrink: 0 
+                                    }}>
+                                        <i className="fas fa-shield" style={{ color: '#60a5fa', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold" style={{
+                                            fontSize: 'var(--text-base)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-medium)',
+                                            lineHeight: 'var(--leading-20)',
+                                            letterSpacing: 'var(--tracking-tighter)',
+                                            marginBottom: 'var(--spacing-8)'
+                                        }}>Value Assurance</h3>
+                                        <p style={{
+                                            color: 'rgba(255, 255, 255, 0.7)',
+                                            fontSize: 'var(--text-sm)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-regular)',
+                                            lineHeight: 'var(--leading-18)',
+                                            letterSpacing: 'var(--tracking-tight)'
+                                        }}>We guarantee measurable business outcomes, not just technology implementation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ 
+                                        backgroundColor: 'rgba(37, 99, 235, 0.2)', 
+                                        borderRadius: 'var(--radius-md)', 
+                                        padding: 'var(--padding-12)', 
+                                        flexShrink: 0 
+                                    }}>
+                                        <i className="fas fa-rocket" style={{ color: '#60a5fa', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold" style={{
+                                            fontSize: 'var(--text-base)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-medium)',
+                                            lineHeight: 'var(--leading-20)',
+                                            letterSpacing: 'var(--tracking-tighter)',
+                                            marginBottom: 'var(--spacing-8)'
+                                        }}>Beyond Pilots</h3>
+                                        <p style={{
+                                            color: 'rgba(255, 255, 255, 0.7)',
+                                            fontSize: 'var(--text-sm)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-regular)',
+                                            lineHeight: 'var(--leading-18)',
+                                            letterSpacing: 'var(--tracking-tight)'
+                                        }}>Moving from proof-of-concept to production-scale impact that transforms operations.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ 
+                                        backgroundColor: 'rgba(37, 99, 235, 0.2)', 
+                                        borderRadius: 'var(--radius-md)', 
+                                        padding: 'var(--padding-12)', 
+                                        flexShrink: 0 
+                                    }}>
+                                        <i className="fas fa-chart-pie" style={{ color: '#60a5fa', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold" style={{
+                                            fontSize: 'var(--text-base)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-medium)',
+                                            lineHeight: 'var(--leading-20)',
+                                            letterSpacing: 'var(--tracking-tighter)',
+                                            marginBottom: 'var(--spacing-8)'
+                                        }}>P&L Impact</h3>
+                                        <p style={{
+                                            color: 'rgba(255, 255, 255, 0.7)',
+                                            fontSize: 'var(--text-sm)',
+                                            fontFamily: 'var(--font-inter)',
+                                            fontWeight: 'var(--font-weight-regular)',
+                                            lineHeight: 'var(--leading-18)',
+                                            letterSpacing: 'var(--tracking-tight)'
+                                        }}>Directly measurable financial results that appear in customer profit and loss statements.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={() => {}} 
+                        onNext={onNext} 
+                        currentPage={1} 
+                        totalPages={3} 
+                        pathTitle="What is 100 × 35?"
+                    />
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 2
+        const WhatScreen2 = ({ onPrev, onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="The what" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>Real Customer Value</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            Track, quantify, and prove value – at scale – across our entire customer base.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-chart-bar" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">Core Principles</p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                            <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#60a5fa', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-chart-line" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#60a5fa' }}>Customer value, not ARR</span>
+                                            <span className="text-white">. </span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Impact for our customers' P&L (revenue, cost, risk, sustainability), not just internal metrics or feature usage.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#a78bfa', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-calendar-check" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#a78bfa' }}>Measured, not aspired</span>
+                                            <span className="text-white">. </span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>We work with customers to quantify outcomes, not just "feel" the improvement.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#4ade80', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-check-circle" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#4ade80' }}>Realized, not estimated</span>
+                                            <span className="text-white">. </span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Value that has actually materialized in the customer's operations, not just in a slide or business case.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={onNext} 
+                        currentPage={2} 
+                        totalPages={3} 
+                        pathTitle="What is 100 × 35?"
+                    />
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 3
+        const WhatScreen3 = ({ onPrev, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="The what" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>5 levels to track value</h1>
+                       
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-road" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">The Journey to Proof</p>
+                        </div>
+
+                    <div className="relative">
+                        <div className="absolute left-1/2 top-0 bottom-0 transform -translate-x-1/2" style={{ width: '2px', backgroundColor: 'rgba(255, 255, 255, 0.2)' }}></div>
+                        
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-12)' }}>
+                            {/* Step 1 - Content on right */}
+                            <div className="flex items-start relative animate-fade-in-up animate-delay-300">
+                                <div className="flex-1 text-right" style={{ paddingRight: 'var(--spacing-24)' }}>
+                                    <h3 className="font-bold aura-h3" style={{ color: '#f87171', marginBottom: 'var(--spacing-8)' }}>Value Estimated</h3>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Cognite's initial estimate of what a use case could deliver, used for the business case.</p>
+                                </div>
+                                <div style={{ backgroundColor: '#ef4444', borderRadius: 'var(--radius-md)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'var(--font-weight-medium)', color: 'white', position: 'relative', zIndex: 10 }}>1</div>
+                                <div className="flex-1" style={{ paddingLeft: 'var(--spacing-24)' }}></div>
+                            </div>
+
+                            {/* Step 2 - Content on left */}
+                            <div className="flex items-start relative animate-fade-in-up animate-delay-400" style={{ marginTop: 'calc(var(--spacing-16) * -1)' }}>
+                                <div className="flex-1" style={{ paddingRight: 'var(--spacing-24)' }}></div>
+                                <div style={{ backgroundColor: '#f97316', borderRadius: 'var(--radius-md)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'var(--font-weight-medium)', color: 'white', position: 'relative', zIndex: 10 }}>2</div>
+                                <div className="flex-1" style={{ paddingLeft: 'var(--spacing-24)' }}>
+                                    <h3 className="font-bold aura-h3" style={{ color: '#fb923c', marginBottom: 'var(--spacing-8)' }}>Customer Agreed</h3>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>The customer has reviewed and agreed to the value estimate.</p>
+                                </div>
+                            </div>
+
+                            {/* Step 3 - Content on right */}
+                            <div className="flex items-start relative animate-fade-in-up animate-delay-500">
+                                <div className="flex-1 text-right" style={{ paddingRight: 'var(--spacing-24)' }}>
+                                    <h3 className="font-bold aura-h3" style={{ color: '#fbbf24', marginBottom: 'var(--spacing-8)' }}>Value Realized</h3>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Unilateral estimate of value already realized based on early data post-deployment.</p>
+                                </div>
+                                <div style={{ backgroundColor: '#eab308', borderRadius: 'var(--radius-md)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'var(--font-weight-medium)', color: 'white', position: 'relative', zIndex: 10 }}>3</div>
+                                <div className="flex-1" style={{ paddingLeft: 'var(--spacing-24)' }}></div>
+                            </div>
+
+                            {/* Step 4 - Content on left */}
+                            <div className="flex items-start relative animate-fade-in-up animate-delay-600">
+                                <div className="flex-1" style={{ paddingRight: 'var(--spacing-24)' }}></div>
+                                <div style={{ backgroundColor: '#14b8a6', borderRadius: 'var(--radius-md)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'var(--font-weight-medium)', color: 'white', position: 'relative', zIndex: 10 }}>4</div>
+                                <div className="flex-1" style={{ paddingLeft: 'var(--spacing-24)' }}>
+                                    <h3 className="font-bold aura-h3" style={{ color: '#2dd4bf', marginBottom: 'var(--spacing-8)' }}>Value Measured</h3>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>We formally measure realized value together with the customer. Results are confidential but robust.</p>
+                                </div>
+                            </div>
+
+                            {/* Step 5 - Content on right */}
+                            <div className="flex items-start relative animate-fade-in-up animate-delay-700">
+                                <div className="flex-1 text-right" style={{ paddingRight: 'var(--spacing-24)' }}>
+                                    <h3 className="font-bold aura-h3" style={{ color: '#4ade80', marginBottom: 'var(--spacing-8)' }}>Value Made Public</h3>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>The customer agrees to share the measured impact publicly – our gold standard of proof.</p>
+                                </div>
+                                <div style={{ backgroundColor: '#22c55e', borderRadius: 'var(--radius-md)', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontWeight: 'var(--font-weight-medium)', color: 'white', position: 'relative', zIndex: 10 }}>5</div>
+                                <div className="flex-1" style={{ paddingLeft: 'var(--spacing-24)' }}></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={() => {}} 
+                        currentPage={3} 
+                        totalPages={3} 
+                        pathTitle="What is 100 × 35?"
+                    />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 1
+        const WhyScreen1 = ({ onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="Why it matters" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>Why 100 × 35 matters</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            As AI and data become <span style={{ color: '#fb923c', fontWeight: 'var(--font-weight-medium)' }}>mission-critical</span> for every industry, the cost of failure is no longer acceptable. Companies need partners who can deliver proven value, not just technology.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-chart-line" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">The Stark Reality</p>
+                        </div>
+
+                        <div className="animate-fade-in-up animate-delay-300" style={{ 
+                            borderRadius: 'var(--radius-xl)', 
+                            padding: 'var(--spacing-24)', 
+                            marginBottom: 'var(--spacing-24)',
+                            backgroundColor: 'rgba(120, 53, 15, 0.4)', 
+                            border: '1px solid rgba(251, 146, 60, 0.3)' 
+                        }}>
+                            <div className="flex items-center" style={{ gap: 'var(--spacing-12)', marginBottom: 'var(--spacing-16)' }}>
+                                <div className="flex items-center" style={{ gap: 'var(--spacing-4)' }}>
+                                    <i className="fas fa-coins" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                                    <i className="fas fa-coins" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                                    <i className="fas fa-coins" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                                </div>
+                                <h3 className="text-white font-bold aura-h3">The True Cost</h3>
+                            </div>
+                            
+                            <p className="aura-body-sm mb-6" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
+                                This failure rate represents more than wasted investment—it's lost opportunity, competitive disadvantage, and eroded trust in AI/data initiatives.
+                            </p>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-16)' }}>
+                                <div className="flex items-start animate-fade-in-up animate-delay-400" style={{ gap: 'var(--spacing-12)' }}>
+                                    <i className="fas fa-money-bill-wave flex-shrink-0" style={{ color: '#f97316', fontSize: 'var(--text-base)', marginTop: 'var(--spacing-4)' }}></i>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Billions in sunk costs with no ROI</p>
+                                </div>
+                                
+                                <div className="flex items-start animate-fade-in-up animate-delay-500" style={{ gap: 'var(--spacing-12)' }}>
+                                    <i className="fas fa-clock flex-shrink-0" style={{ color: '#f97316', fontSize: 'var(--text-base)', marginTop: 'var(--spacing-4)' }}></i>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Years of delayed digital transformation</p>
+                                </div>
+                                
+                                <div className="flex items-start animate-fade-in-up animate-delay-600" style={{ gap: 'var(--spacing-12)' }}>
+                                    <i className="fas fa-users flex-shrink-0" style={{ color: '#f97316', fontSize: 'var(--text-base)', marginTop: 'var(--spacing-4)' }}></i>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Team burnout and initiative fatigue</p>
+                                </div>
+                                
+                                <div className="flex items-start animate-fade-in-up animate-delay-700" style={{ gap: 'var(--spacing-12)' }}>
+                                    <i className="fas fa-shield flex-shrink-0" style={{ color: '#f97316', fontSize: 'var(--text-base)', marginTop: 'var(--spacing-4)' }}></i>
+                                    <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Loss of competitive advantage</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={() => {}} 
+                        onNext={onNext} 
+                        currentPage={1} 
+                        totalPages={3} 
+                        pathTitle="Why 100 × 35 Matters"
+                    />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 2
+        const WhyScreen2 = ({ onPrev, onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="Why it matters" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>Value assurance is our differentiator</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            While the industry struggles with a 95% failure rate, Cognite's value assurance approach ensures every initiative delivers measurable, scalable business impact.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-shield" style={{ color: '#22c55e', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">Pillars of Value Assurance</p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                            <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#1f2937', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-xs)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#f87171', textDecoration: 'line-through' }}>Technology-First</span>
+                                            <span style={{ margin: '0 var(--spacing-8)', color: 'white' }}>→</span>
+                                            <span style={{ color: '#4ade80' }}>Value-First</span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Every decision starts with business impact, not technical capability.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#1f2937', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-xs)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#f87171', textDecoration: 'line-through' }}>Pilot Success</span>
+                                            <span style={{ margin: '0 var(--spacing-8)', color: 'white' }}>→</span>
+                                            <span style={{ color: '#4ade80' }}>Scaled Impact</span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Success is measured by enterprise-wide adoption, not proof of concept.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#1f2937', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-xs)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#f87171', textDecoration: 'line-through' }}>Vendor Promises</span>
+                                            <span style={{ margin: '0 var(--spacing-8)', color: 'white' }}>→</span>
+                                            <span style={{ color: '#4ade80' }}>Customer Validation</span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Value is validated by the customer, not claimed by the vendor.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-600" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#1f2937', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <i className="fas fa-arrow-right" style={{ color: 'white', fontSize: 'var(--text-xs)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>
+                                            <span style={{ color: '#f87171', textDecoration: 'line-through' }}>Opaque Metrics</span>
+                                            <span style={{ margin: '0 var(--spacing-8)', color: 'white' }}>→</span>
+                                            <span style={{ color: '#4ade80' }}>Transparent KPIs</span>
+                                        </h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Clear, measurable, publicly shareable evidence of business impact.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={onNext} 
+                        currentPage={2} 
+                        totalPages={3} 
+                        pathTitle="Why 100 × 35 Matters"
+                    />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 3
+        const WhyScreen3 = ({ onPrev, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="Why it matters" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>Culture Shift</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            100 × 35 changes how we think and work internally. It says that "value" is not one team's responsibility – it's our shared operating system.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-graduation-cap" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">Behavioral Transformation</p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                            <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: 'rgba(249, 115, 22, 0.2)', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-comments" style={{ color: '#f97316', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>In Every Conversation</h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Sales, product, and delivery teams now start conversations with value, not features.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: 'rgba(59, 130, 246, 0.2)', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-clipboard-check" style={{ color: '#3b82f6', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>In Project Planning</h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Every initiative must define its value story before receiving approval.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-file-lines" style={{ color: '#a855f7', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>In Performance Reviews</h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Success is measured by customer value delivered, not just tasks completed.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-600" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-trophy" style={{ color: '#22c55e', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>In Celebrations</h3>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>We celebrate validated value stories, not just product launches.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={() => {}} 
+                        currentPage={3} 
+                        totalPages={3} 
+                        pathTitle="Why 100 × 35 Matters"
+                    />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 1 - Aura Design System
+        const HowScreen1 = ({ onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="How we get there" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>How we reach $100B by 2035</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            is achieved through systematic processes, rigorous measurement, and continuous learning.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-flag" style={{ color: '#fbbf24', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">Key Milestones</p>
+                        </div>
+
+                        <div className="relative">
+                            <div className="absolute top-0 bottom-0" style={{ 
+                                left: '46px',
+                                borderLeft: '2px dashed rgba(255, 255, 255, 0.3)',
+                                height: '100%'
+                            }}></div>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                                <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                    <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ backgroundColor: '#3b82f6', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+                                            <i className="fas fa-play" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Milestone 1</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Launch Value Launchpad across all customer engagements. Every new project starts with defined value criteria.</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <p style={{ color: '#60a5fa', fontWeight: 'var(--font-weight-medium)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-inter)' }}>Q1 2024</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                    <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ backgroundColor: '#a855f7', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+                                            <i className="fas fa-rocket" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Milestone 2</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Achieve 50+ Level 4 value stories with validated P&L impact. Establish baseline for scaling.</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <p style={{ color: '#a78bfa', fontWeight: 'var(--font-weight-medium)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-inter)' }}>Q3 2025</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                    <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ backgroundColor: '#C2410C', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+                                            <i className="fas fa-rocket" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Milestone 3</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Deploy value tracking dashboard company-wide. Real-time visibility into all value stories across levels.</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <p style={{ color: '#C2410C', fontWeight: 'var(--font-weight-medium)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-inter)' }}>Q4 2028</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="animate-fade-in-up animate-delay-600" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                    <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ backgroundColor: '#ec4899', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+                                            <i className="fas fa-chart-line" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Milestone 4</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Create library of 200+ replicable value blueprints. Enable rapid deployment across industries.</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <p style={{ color: '#f472b6', fontWeight: 'var(--font-weight-medium)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-inter)' }}>Q2 2032</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="animate-fade-in-up animate-delay-700" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-8)' }}>
+                                    <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                        <div style={{ backgroundColor: '#22c55e', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0, position: 'relative', zIndex: 10 }}>
+                                            <i className="fas fa-flag-checkered" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                        </div>
+                                        <div style={{ flex: 1 }}>
+                                            <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Milestone 5</h3>
+                                            <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Reach $100B in cumulative customer value. Establish Cognite as the definitive value delivery platform.</p>
+                                        </div>
+                                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                                            <p style={{ color: '#4ade80', fontWeight: 'var(--font-weight-medium)', fontSize: 'var(--text-sm)', fontFamily: 'var(--font-inter)' }}>Dec 2035</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={() => {}} 
+                        onNext={onNext} 
+                        currentPage={1} 
+                        totalPages={3} 
+                        pathTitle="How we get there"
+                    />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 2 - Aura Design System
+        const HowScreen2 = ({ onPrev, onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="How we get there" />
+                    
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>It takes all of us</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            Every Cogniter has a distinct role to play in 100 × 35. Here's how different roles contribute to unlocking value.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-briefcase" style={{ color: '#3b82f6', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">Role Mandates</p>
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-24)' }}>
+                            <div className="animate-fade-in-up animate-delay-300" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#3b82f6', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-briefcase" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Account Executive</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(59, 130, 246, 0.3)', 
+                                            color: '#60a5fa', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Architect of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Uses the <span style={{ color: '#60a5fa', fontWeight: 'var(--font-weight-medium)' }}>Value Launchpad</span> to frame deals around business outcomes and ensures value is baked into SOWs.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#a855f7', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-cube" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Product Manager</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(168, 85, 247, 0.3)', 
+                                            color: '#a78bfa', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Builder of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Prioritizes features that drive <span style={{ color: '#a78bfa', fontWeight: 'var(--font-weight-medium)' }}>measurable outcomes</span> and gives customers tools to track financial & value levers.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#f97316', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-tasks" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Project Manager</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(249, 115, 22, 0.3)', 
+                                            color: '#fb923c', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Deliverer of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Runs projects against <span style={{ color: '#fb923c', fontWeight: 'var(--font-weight-medium)' }}>business goals</span>, not just activity. Ensures milestones reflect impact on the customer's P&L.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-600" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#22c55e', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-code" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Engineer / Data Scientist</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(16, 185, 129, 0.3)', 
+                                            color: '#4ade80', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Designer of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Turns data and models into outcomes, framing results in terms of <span style={{ color: '#4ade80', fontWeight: 'var(--font-weight-medium)' }}>business KPIs</span> and real-world decisions.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-700" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#ec4899', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-heart" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>CBE / TAM</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(236, 72, 153, 0.3)', 
+                                            color: '#f472b6', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Accelerator of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Monitors adoption and links <span style={{ color: '#f472b6', fontWeight: 'var(--font-weight-medium)' }}>technical performance</span> back to agreed business outcomes.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-800" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#ef4444', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-bullhorn" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Marketing</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(239, 68, 68, 0.3)', 
+                                            color: '#f87171', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Storyteller of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Converts <span style={{ color: '#f87171', fontWeight: 'var(--font-weight-medium)' }}>Level 5 successes</span> into public stories that prove Cognite's value assurance.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-900" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(20, 184, 166, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#14B8A6', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-users" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>P&O Partner</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(20, 184, 166, 0.3)', 
+                                            color: '#14B8A6', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Enabler of Value Culture</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Recruits and develops <span style={{ color: '#14B8A6', fontWeight: 'var(--font-weight-medium)' }}>talent that thinks</span> in terms of customer value.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="animate-fade-in-up animate-delay-1000" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', background: 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%)' }}>
+                                <div className="flex items-start" style={{ gap: 'var(--spacing-16)' }}>
+                                    <div style={{ backgroundColor: '#eab308', borderRadius: 'var(--radius-md)', padding: 'var(--padding-12)', flexShrink: 0 }}>
+                                        <i className="fas fa-shield" style={{ color: 'white', fontSize: 'var(--text-base)' }}></i>
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Finance Partner</h3>
+                                        <span style={{ 
+                                            display: 'inline-block', 
+                                            backgroundColor: 'rgba(234, 179, 8, 0.3)', 
+                                            color: '#fbbf24', 
+                                            fontWeight: 'var(--font-weight-medium)', 
+                                            fontSize: 'var(--text-xs)', 
+                                            padding: 'var(--padding-4) var(--padding-12)', 
+                                            borderRadius: '9999px', 
+                                            marginBottom: 'var(--spacing-12)',
+                                            fontFamily: 'var(--font-inter)',
+                                            lineHeight: 'var(--leading-14)',
+                                            letterSpacing: 'var(--tracking-tighter)'
+                                        }}>The Guardian of Value</span>
+                                        <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Aligns <span style={{ color: '#fbbf24', fontWeight: 'var(--font-weight-medium)' }}>commercial models</span> with customer success and champions rigorous value measurement.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={onNext} 
+                        currentPage={2} 
+                        totalPages={3} 
+                        pathTitle="How we get there"
+                    />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 3 - Aura Design System
+        const HowScreen3 = ({ onPrev, onNext, onHome }) => {
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen pb-32" style={{ padding: `var(--spacing-24) var(--spacing-16)`, paddingTop: '7rem' }}>
+                    <Header onHomeClick={onHome} showBreadcrumb={false} breadcrumbText="How we get there" />
+                    
+                    <div className="max-w-5xl mx-auto">
+                        <h1 className="text-white font-bold animate-fade-in-up aura-h1" style={{ marginBottom: 'var(--spacing-24)' }}>It takes all of us</h1>
+                        <p className="text-white leading-relaxed animate-fade-in-up animate-delay-100 aura-body" style={{ marginBottom: 'var(--spacing-16)' }}>
+                            To support 100 × 35, Cognite is rolling out systems and processes for reporting value across the entire lifecycle – from early potential to scaled impact.
+                        </p>
+                        
+                        <div className="flex items-center animate-fade-in-up animate-delay-200" style={{ gap: 'var(--spacing-8)', marginBottom: 'var(--spacing-48)' }}>
+                            <i className="fas fa-sync-alt" style={{ color: '#22c55e', fontSize: 'var(--text-base)' }}></i>
+                            <p className="text-white aura-body">The Continuous Feedback Loop</p>
+                        </div>
+
+                        {/* Circular Feedback Loop Diagram */}
+                        <div className="relative w-full max-w-2xl mx-auto mb-16 animate-fade-in-up animate-delay-300" style={{ height: '500px' }}>
+                            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet">
+                                {/* Define arrow marker */}
+                                <defs>
+                                    <marker
+                                        id="arrowhead-cycle"
+                                        markerWidth="12"
+                                        markerHeight="12"
+                                        refX="10"
+                                        refY="6"
+                                        orient="auto"
+                                    >
+                                        <polygon
+                                            points="0 0, 12 6, 0 12"
+                                            fill="rgba(16, 185, 129, 0.7)"
+                                        />
+                                    </marker>
+                                </defs>
+                                
+                                {/* Circular cycle paths with arrows */}
+                                {/* Launch (top-right, 45°) → Measure (bottom-right, 135°) */}
+                                <path
+                                    d="M 385 115 A 150 150 0 0 1 385 385"
+                                    fill="none"
+                                    stroke="rgba(16, 185, 129, 0.5)"
+                                    strokeWidth="3"
+                                    strokeDasharray="8,5"
+                                    markerEnd="url(#arrowhead-cycle)"
+                                />
+                                
+                                {/* Measure (bottom-right, 135°) → Report (bottom-left, 225°) */}
+                                <path
+                                    d="M 385 385 A 150 150 0 0 1 115 385"
+                                    fill="none"
+                                    stroke="rgba(16, 185, 129, 0.5)"
+                                    strokeWidth="3"
+                                    strokeDasharray="8,5"
+                                    markerEnd="url(#arrowhead-cycle)"
+                                />
+                                
+                                {/* Report (bottom-left, 225°) → Improve (top-left, 315°) */}
+                                <path
+                                    d="M 115 385 A 150 150 0 0 1 115 115"
+                                    fill="none"
+                                    stroke="rgba(16, 185, 129, 0.5)"
+                                    strokeWidth="3"
+                                    strokeDasharray="8,5"
+                                    markerEnd="url(#arrowhead-cycle)"
+                                />
+                                
+                                {/* Improve (top-left, 315°) → Launch (top-right, 45°) */}
+                                <path
+                                    d="M 115 115 A 150 150 0 0 1 385 115"
+                                    fill="none"
+                                    stroke="rgba(16, 185, 129, 0.5)"
+                                    strokeWidth="3"
+                                    strokeDasharray="8,5"
+                                    markerEnd="url(#arrowhead-cycle)"
+                                />
+                                
+                                {/* Center label */}
+                                <text
+                                    x="250"
+                                    y="250"
+                                    textAnchor="middle"
+                                    dominantBaseline="middle"
+                                    fill="white"
+                                    fontSize="var(--text-base)"
+                                    fontWeight="var(--font-weight-medium)"
+                                    fontFamily="var(--font-inter)"
+                                    letterSpacing="var(--tracking-tighter)"
+                                >
+                                    The Feedback Loop in Action
+                                </text>
+                            </svg>
+                            
+                            {/* Top-right node - Launch (Blue) - Start of cycle */}
+                            <div className="absolute" style={{ top: '15%', right: '15%', transform: 'translate(50%, -50%)' }}>
+                                <div style={{ backgroundColor: '#3b82f6', borderRadius: '9999px', padding: 'var(--padding-16)', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'relative', zIndex: 10, border: '2px solid #93c5fd' }}>
+                                    <i className="fas fa-rocket" style={{ color: 'white', fontSize: 'var(--text-2xl)' }}></i>
+                                </div>
+                                <div className="absolute top-full left-1/2 transform -translate-x-1/2" style={{ marginTop: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
+                                    <span className="text-white aura-label">Launch</span>
+                                </div>
+                            </div>
+                            
+                            {/* Bottom-right node - Measure (Green) */}
+                            <div className="absolute" style={{ bottom: '15%', right: '15%', transform: 'translate(50%, 50%)' }}>
+                                <div style={{ backgroundColor: '#22c55e', borderRadius: '9999px', padding: 'var(--padding-16)', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'relative', zIndex: 10, border: '2px solid #86efac' }}>
+                                    <i className="fas fa-chart-bar" style={{ color: 'white', fontSize: 'var(--text-2xl)' }}></i>
+                                </div>
+                                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2" style={{ marginBottom: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
+                                    <span className="text-white aura-label">Measure</span>
+                                </div>
+                            </div>
+                            
+                            {/* Bottom-left node - Report (Orange) */}
+                            <div className="absolute" style={{ bottom: '15%', left: '15%', transform: 'translate(-50%, 50%)' }}>
+                                <div style={{ backgroundColor: '#f97316', borderRadius: '9999px', padding: 'var(--padding-16)', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'relative', zIndex: 10, border: '2px solid #fdba74' }}>
+                                    <i className="fas fa-file-alt" style={{ color: 'white', fontSize: 'var(--text-2xl)' }}></i>
+                                </div>
+                                <div className="absolute bottom-full right-1/2 transform translate-x-1/2" style={{ marginBottom: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
+                                    <span className="text-white aura-label">Report</span>
+                                </div>
+                            </div>
+                            
+                            {/* Top-left node - Improve (Purple) */}
+                            <div className="absolute" style={{ top: '15%', left: '15%', transform: 'translate(-50%, -50%)' }}>
+                                <div style={{ backgroundColor: '#a855f7', borderRadius: '9999px', padding: 'var(--padding-16)', width: '80px', height: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', position: 'relative', zIndex: 10, border: '2px solid #c4b5fd' }}>
+                                    <i className="fas fa-cog" style={{ color: 'white', fontSize: 'var(--text-2xl)' }}></i>
+                                </div>
+                                <div className="absolute top-full right-1/2 transform translate-x-1/2" style={{ marginTop: 'var(--spacing-8)', whiteSpace: 'nowrap' }}>
+                                    <span className="text-white aura-label">Improve</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Content Cards Grid */}
+                        <div className="grid grid-cols-2 max-w-3xl mx-auto" style={{ gap: 'var(--spacing-24)' }}>
+                            {/* Launch Card */}
+                            <div className="animate-fade-in-up animate-delay-400" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', border: '2px solid rgba(59, 130, 246, 0.5)' }}>
+                                <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Launch</h3>
+                                <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Deploy use cases to customers</p>
+                            </div>
+
+                            {/* Measure Card */}
+                            <div className="animate-fade-in-up animate-delay-500" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', border: '2px solid rgba(16, 185, 129, 0.5)' }}>
+                                <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Measure</h3>
+                                <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Track metrics & outcomes</p>
+                            </div>
+
+                            {/* Report Card */}
+                            <div className="animate-fade-in-up animate-delay-600" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', border: '2px solid rgba(249, 115, 22, 0.5)' }}>
+                                <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Report</h3>
+                                <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Document value stories</p>
+                            </div>
+
+                            {/* Improve Card */}
+                            <div className="animate-fade-in-up animate-delay-700" style={{ borderRadius: 'var(--radius-xl)', padding: 'var(--padding-16)', border: '2px solid rgba(168, 85, 247, 0.5)' }}>
+                                <h3 className="text-white font-bold aura-h3" style={{ marginBottom: 'var(--spacing-8)' }}>Improve</h3>
+                                <p className="aura-body-sm" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>Refine & optimize approach</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={onNext} 
+                        currentPage={3} 
+                        totalPages={3} 
+                        pathTitle="How we get there"
+                    />
+                </div>
+            );
+        };
+
+        // Main App with Routing
+        const App = () => {
+            const { useRef, useEffect } = React;
+            const [currentView, setCurrentView] = useState('home');
+            const [currentPath, setCurrentPath] = useState(null);
+            const [currentScreen, setCurrentScreen] = useState(1);
+            const [hasNavigatedFromPath, setHasNavigatedFromPath] = useState(false);
+            const inactivityTimerRef = useRef(null);
+            
+            const resetToHomeButton = () => {
+                // Always reset navigation state first
+                setCurrentView('home');
+                setCurrentPath(null);
+                setCurrentScreen(1);
+                setHasNavigatedFromPath(false);
+                
+                // Hide gradient overlay
+                const overlay = document.querySelector('.gradient-overlay');
+                if (overlay) {
+                    overlay.classList.remove('visible');
+                }
+                
+                // Trigger reset event to fade out home page content if visible
+                window.dispatchEvent(new Event('app-reset'));
+            };
+            
+            const resetInactivityTimer = () => {
+                // Clear existing timer
+                if (inactivityTimerRef.current) {
+                    clearTimeout(inactivityTimerRef.current);
+                }
+                
+                // Set timer for 30 seconds - works on all screens
+                inactivityTimerRef.current = setTimeout(() => {
+                    resetToHomeButton();
+                }, 30000); // 30 seconds
+            };
+            
+            // Track user activity on all screens
+            useEffect(() => {
+                // Reset timer whenever view changes
+                resetInactivityTimer();
+                
+                const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+                
+                const handleActivity = () => {
+                    resetInactivityTimer();
+                };
+                
+                // Add event listeners
+                activityEvents.forEach(event => {
+                    window.addEventListener(event, handleActivity);
+                });
+                
+                // Cleanup
+                return () => {
+                    activityEvents.forEach(event => {
+                        window.removeEventListener(event, handleActivity);
+                    });
+                    if (inactivityTimerRef.current) {
+                        clearTimeout(inactivityTimerRef.current);
+                    }
+                };
+            }, [currentView, currentPath, currentScreen]);
+
+            const handlePathClick = (pathId) => {
+                setCurrentPath(pathId);
+                setCurrentScreen(1);
+                setCurrentView('path');
+                setHasNavigatedFromPath(true);
+            };
+
+            const handleHome = () => {
+                setCurrentView('home');
+                setCurrentPath(null);
+                setCurrentScreen(1);
+                // Keep hasNavigatedFromPath true so content shows
+            };
+
+            const handleNext = () => {
+                if (currentPath === 'what' && currentScreen < 3) {
+                    setCurrentScreen(currentScreen + 1);
+                } else if (currentPath === 'why' && currentScreen < 3) {
+                    setCurrentScreen(currentScreen + 1);
+                } else if (currentPath === 'how' && currentScreen < 3) {
+                    setCurrentScreen(currentScreen + 1);
+                }
+            };
+
+            const handlePrev = () => {
+                if (currentScreen > 1) {
+                    setCurrentScreen(currentScreen - 1);
+                } else {
+                    handleHome();
+                }
+            };
+
+            const renderView = () => {
+                if (currentView === 'home') {
+                    // Show content immediately if we're navigating back from a path
+                    return <HomePage onPathClick={handlePathClick} showContentImmediately={hasNavigatedFromPath} />;
+                }
+
+                if (currentPath === 'what') {
+                    if (currentScreen === 1) {
+                        return <WhatScreen1 onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 2) {
+                        return <WhatScreen2 onPrev={handlePrev} onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 3) {
+                        return <WhatScreen3 onPrev={handlePrev} onHome={handleHome} />;
+                    }
+                }
+
+                if (currentPath === 'why') {
+                    if (currentScreen === 1) {
+                        return <WhyScreen1 onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 2) {
+                        return <WhyScreen2 onPrev={handlePrev} onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 3) {
+                        return <WhyScreen3 onPrev={handlePrev} onHome={handleHome} />;
+                    }
+                }
+
+                if (currentPath === 'how') {
+                    if (currentScreen === 1) {
+                        return <HowScreen1 onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 2) {
+                        return <HowScreen2 onPrev={handlePrev} onNext={handleNext} onHome={handleHome} />;
+                    } else if (currentScreen === 3) {
+                        return <HowScreen3 onPrev={handlePrev} onNext={handleNext} onHome={handleHome} />;
+                    }
+                }
+
+                return <HomePage onPathClick={handlePathClick} showContentImmediately={true} />;
+            };
+
+            return renderView();
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+
+    <script>
+        // Ensure video plays
+        const video = document.getElementById('bg-video');
+        if (video) {
+            video.addEventListener('loadeddata', () => {
+                video.play().catch(err => {
+                    console.log('Video autoplay prevented:', err);
+                });
+            });
+            video.addEventListener('canplay', () => {
+                video.play().catch(err => {
+                    console.log('Video play on canplay failed:', err);
+                });
+            });
+            video.play().catch(err => {
+                console.log('Initial play attempt:', err);
+            });
+        }
+
+        // Fullscreen functionality
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                requestFullscreen();
+            }, 500);
+        });
+
+        document.addEventListener('click', () => {
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.msFullscreenElement && 
+                !document.mozFullScreenElement) {
+                requestFullscreen();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>

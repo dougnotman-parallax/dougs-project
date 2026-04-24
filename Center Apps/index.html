@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#1e40af">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MoonShot">
+    <link rel="apple-touch-icon" href="/favicon.png">
+    <title>Cognite MoonShot</title>
+    <script>
+        window.__deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); window.__deferredInstallPrompt = e; });
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .font-heading {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .font-inter {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .background-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .background-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(2, 6, 23, 0.98) 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1s ease-out;
+        }
+        
+        .gradient-overlay.visible {
+            opacity: 1;
+        }
+        
+        .ghost-button {
+            background: transparent;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ghost-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 0.6),
+                transparent
+            );
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
+            animation: shimmer-top 5s infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .ghost-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -100%;
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.6),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 1),
+                rgba(255, 255, 255, 0.6),
+                transparent
+            );
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 12px rgba(255, 255, 255, 0.6);
+            animation: shimmer-bottom 5s infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        @keyframes shimmer-top {
+            0% {
+                left: -100%;
+            }
+            8% {
+                left: 150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+        
+        @keyframes shimmer-bottom {
+            0% {
+                left: -100%;
+            }
+            8% {
+                left: 150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+        
+        .ghost-button:hover {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .ghost-button:hover::before {
+            animation: shimmer-top 3s infinite;
+        }
+        
+        .ghost-button:hover::after {
+            animation: shimmer-bottom 3s infinite;
+        }
+        
+        .home-content {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.4s ease-in, transform 1.4s ease-in;
+        }
+        
+        .home-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .home-content.animate-delay-100 {
+            transition-delay: 0.3s;
+        }
+        
+        .home-content.animate-delay-200 {
+            transition-delay: 0.6s;
+        }
+        
+        .home-content.animate-delay-300 {
+            transition-delay: 1s;
+        }
+        
+        .home-content.animate-delay-400 {
+            transition-delay: 1.4s;
+        }
+        
+        .home-content.animate-delay-500 {
+            transition-delay: 1.8s;
+        }
+        
+        .home-content.animate-delay-600 {
+            transition-delay: 2.2s;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 1;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        /* Parallax animation styles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .animate-delay-100 {
+            animation-delay: 0.1s;
+        }
+        
+        .animate-delay-200 {
+            animation-delay: 0.2s;
+        }
+        
+        .animate-delay-300 {
+            animation-delay: 0.3s;
+        }
+        
+        .animate-delay-400 {
+            animation-delay: 0.4s;
+        }
+        
+        .animate-delay-500 {
+            animation-delay: 0.5s;
+        }
+        
+        .animate-delay-600 {
+            animation-delay: 0.6s;
+        }
+        
+        .animate-delay-700 {
+            animation-delay: 0.7s;
+        }
+        
+        .animate-delay-800 {
+            animation-delay: 0.8s;
+        }
+        
+        .animate-delay-900 {
+            animation-delay: 0.9s;
+        }
+        
+        .animate-delay-1000 {
+            animation-delay: 1.0s;
+        }
+     
+    </style>
+</head>
+<body>
+    <div class="background-container">
+        <video 
+            src="video/screen_1.mp4" 
+            autoplay 
+            loop 
+            muted 
+            playsinline 
+            preload="auto"
+            class="background-video"
+            id="bg-video">
+        </video>
+    </div>
+    <div class="gradient-overlay"></div>
+    
+    <script type="application/json" id="default-content">{"home":{"title":"Cognite's MoonShot","subtitlePrefix":"","subtitleHighlight":"100 x 35","subtitleSuffix" :": $100 Billion in realized customer value by 2035 - and how every Cogniter helps get us there.","shareButtonText":"Share","pathCards":[{"title":"What is 100 × 35?","subtitle":"Understand the mission"},{"title":"Why does it matter to you?","subtitle":"Discover the impact"},{"title":"How will we get there?","subtitle":"Explore the roadmap"}]},"what":{"pathTitle":"What is 100 × 35?","breadcrumb":"The what","screen1":{"headline":"What is 100 x 35?","mainContent":"Cognite will deliver $100 Billion of realized customer value by 2035.","highlightPhrase":"realized customer value","cardTitle":"100X35 is not just a slogan","cardBody":"It's our pledge to you in a world where most AI and data initiatives never reach real business impact. 100 × 35 says that Cognite is in the business of *delivering real business impact* – moving customers beyond pilots to measurable outcomes to their P&L.","videoId":"_YjpgQIX7is"},"screen2":{"headline":"Realized customer value, not just potential","mainContent":"Track, quantify, and prove value – at scale – at every customer.","sectionLabel":"Core Principles","principle1Title":"Your value, not our profit.","principle1Body":"Impact for our customers' P&L (revenue, cost, risk, sustainability), not just internal metrics or feature usage.","principle2Title":"Measured, not aspired.","principle2Body":"We partner with customers to ensure quantified outcomes, not just \"feel\" the improvement.","principle3Title":"Realized, not estimated.","principle3Body":"Value that has actually materialized in our customer's operations, not just on a slide or business case."},"screen3":{"headline":"The Customer Value Journey","sectionLabel":"The Journey to Proof. Partnering with our customers across all use cases, and at scale.","level1Title":"Value Estimated","level1Body":"Cognite's initial estimate of what a use case could deliver, used for the business case.","level2Title":"Customer Agreed","level2Body":"The customer has reviewed and agreed to the value estimate.","level3Title":"Value Realized","level3Body":"Unilateral estimate of value already realized based on early data post-deployment.","level4Title":"Value Measured","level4Body":"We formally measure realized value together with you, our customer. Results are confidential but robust.","level5Title":"Value Made Public","level5Body":"We partner with you, our customer, to celebrate and share the impact of your use cases at scale publically - our gold standard of proof."}},"why":{"pathTitle":"Why 100 × 35 Matters","breadcrumb":"Why it matters","screen1":{"headline":"Why 100 × 35 matters","mainContent":"As AI and data become mission-critical for every industry, the cost of failure is no longer acceptable. Companies need partners who can deliver proven value, not just technology.","sectionLabel":"The Stark Reality","trueCostTitle":"The True Cost","trueCostBody":"This failure rate represents more than wasted investment—it's lost opportunity, competitive disadvantage, and eroded trust in AI/data initiatives.","bullet1":"Billions in sunk costs with no ROI","bullet2":"Years of delayed digital transformation","bullet3":"Team burnout and initiative fatigue","bullet4":"Loss of competitive advantage"},"screen2":{"headline":"Value assurance is our differentiator","mainContent":"While the industry struggles with a 95% failure rate, Cognite's value assurance approach ensures every initiative delivers measurable, scalable business impact.","sectionLabel":"Pillars of Value Assurance","pillar1From":"Technology-First","pillar1To":"Value-First","pillar1Body":"Every decision starts with business impact, not technical capability.","pillar2From":"Pilot Success","pillar2To":"Scaled Impact","pillar2Body":"Success is measured by enterprise-wide adoption, not proof of concept.","pillar3From":"Vendor Promises","pillar3To":"Customer Validation","pillar3Body":"Value is validated by the customer, not claimed by the vendor.","pillar4From":"Opaque Metrics","pillar4To":"Transparent KPIs","pillar4Body":"Clear, measurable, publicly shareable evidence of business impact."},"screen3":{"headline":"Culture Shift","mainContent":"100 × 35 changes how we think and work internally. It says that \"value\" is not one team's responsibility – it's our shared operating system.","sectionLabel":"Behavioral Transformation","item1Title":"In Every Conversation","item1Body":"Sales, product, and delivery teams now start conversations with value, not features.","item2Title":"In Project Planning","item2Body":"Every initiative must define its value story before receiving approval.","item3Title":"In Performance Reviews","item3Body":"Success is measured by customer value delivered, not just tasks completed.","item4Title":"In Celebrations","item4Body":"We celebrate validated value stories, not just product launches."}},"how":{"pathTitle":"How we get there","breadcrumb":"How we get there","screen1":{"headline":"How we reach $100B by 2035","mainContent":"is achieved through systematic processes, rigorous measurement, and continuous learning.","sectionLabel":"Key Milestones","milestone1Title":"Milestone 1","milestone1Body":"Launch Value Launchpad across all customer engagements. Every new project starts with defined value criteria.","milestone1Date":"Q1 2024","milestone2Title":"Milestone 2","milestone2Body":"Achieve 50+ Level 4 value stories with validated P&L impact. Establish baseline for scaling.","milestone2Date":"Q3 2025","milestone3Title":"Milestone 3","milestone3Body":"Deploy value tracking dashboard company-wide. Real-time visibility into all value stories across levels.","milestone3Date":"Q4 2028","milestone4Title":"Milestone 4","milestone4Body":"Create library of 200+ replicable value blueprints. Enable rapid deployment across industries.","milestone4Date":"Q2 2032","milestone5Title":"Milestone 5","milestone5Body":"Reach $100B in cumulative customer value. Establish Cognite as the definitive value delivery platform.","milestone5Date":"Dec 2035"},"screen2":{"headline":"It takes all of us","mainContent":"Every Cogniter has a distinct role to play in 100 × 35. Here's how different roles contribute to unlocking value.","sectionLabel":"Role Mandates","roles":[{"title":"Account Executive","tagline":"The Architect of Value","body":"Uses the Value Launchpad to frame deals around business outcomes and ensures value is baked into SOWs."},{"title":"Product Manager","tagline":"The Builder of Value","body":"Prioritizes features that drive measurable outcomes and gives customers tools to track financial & value levers."},{"title":"Project Manager","tagline":"The Deliverer of Value","body":"Runs projects against business goals, not just activity. Ensures milestones reflect impact on the customer's P&L."},{"title":"Engineer / Data Scientist","tagline":"The Designer of Value","body":"Turns data and models into outcomes, framing results in terms of business KPIs and real-world decisions."},{"title":"CBE / TAM","tagline":"The Accelerator of Value","body":"Monitors adoption and links technical performance back to agreed business outcomes."},{"title":"Marketing","tagline":"The Storyteller of Value","body":"Converts Level 5 successes into public stories that prove Cognite's value assurance."},{"title":"P&O Partner","tagline":"The Enabler of Value Culture","body":"Recruits and develops talent that thinks in terms of customer value."},{"title":"Finance Partner","tagline":"The Guardian of Value","body":"Aligns commercial models with customer success and champions rigorous value measurement."}]},"screen3":{"headline":"Customer value to date","subhead":"Progress toward $100B realized customer value by 2035.","tabOverview":"Overview","tabCurrentYear":"(current year)","chartTitleOverview":"Timeline & value","trackerLabelOverview":"Realized Customer value","yearsRemainingLabel":"years remaining","chartTitleYear":"progress","yearChartSubtitle":"Month-by-month realized customer value ($B). Amber = current month in progress.","trackerLabelYear":"Realized Customer value","thisYearLabel":"this year","valueStart2025":5,"valueEnd2025":22,"ytd2026":7,"ytd2026JanShare":0.37,"ytd2026FebShare":0.63}}}</script>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const defaultContentEl = document.getElementById('default-content');
+        const DEFAULT_CONTENT = defaultContentEl ? JSON.parse(defaultContentEl.textContent) : {};
+        const { useState, useEffect } = React;
+
+        // Icon Components
+        const HomeIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M9 22V12H15V22" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const ArrowLeft = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const ArrowRight = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        const TargetIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="#3B82F6" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="6" stroke="#3B82F6" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="2" fill="#3B82F6"/>
+            </svg>
+        );
+
+        const ShieldIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L4 6V12C4 17.55 7.16 22.74 12 24C16.84 22.74 20 17.55 20 12V6L12 2Z" stroke="#3B82F6" strokeWidth="2" fill="none"/>
+                <path d="M12 12L10 10L8 12L12 16L16 12L14 10L12 12Z" fill="white" fillOpacity="0.8"/>
+            </svg>
+        );
+
+        const RoadIcon = () => (
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 18L8 6L12 14L16 2L20 10" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <circle cx="4" cy="18" r="2" fill="#3B82F6"/>
+                <circle cx="20" cy="10" r="2" fill="#3B82F6"/>
+            </svg>
+        );
+
+        const ArrowRightCard = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+        );
+
+        // Share helper - opens SMS or Email
+        const getShareData = () => {
+            const url = typeof window !== 'undefined' ? window.location.href : '';
+            const title = 'Cognite MoonShot';
+            const text = '$100 Billion in realized customer value by 2035. Explore the mission.';
+            return { url, title, text };
+        };
+        const handleShareAction = (method) => {
+            const { url, title, text } = getShareData();
+            const fullText = `${text} ${url}`;
+            if (method === 'email') {
+                window.location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(fullText)}`;
+            } else if (method === 'sms') {
+                window.location.href = `sms:?body=${encodeURIComponent(fullText)}`;
+            }
+        };
+        const openShareMenu = (onShareClick) => {
+            onShareClick();
+        };
+
+        // Header Component
+        const Header = ({ onHomeClick, onShareClick, showBreadcrumb, breadcrumbText }) => (
+            <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-start p-6">
+                <div className="flex items-center space-x-4">
+                    <img src="images/logo.png" alt="Logo" className="h-10 w-auto" />
+                    {showBreadcrumb && (
+                        <div className="text-white text-sm font-heading">
+                            <span>Home</span>
+                            <span className="text-blue-400"> {breadcrumbText}</span>
+                        </div>
+                    )}
+                </div>
+                <div className="flex items-center gap-2">
+                    {onShareClick && (
+                        <button
+                            onClick={() => openShareMenu(onShareClick)}
+                            className="w-10 h-10 rounded-full border border-white/40 bg-transparent flex items-center justify-center hover:border-white/70 hover:bg-white/5 transition-colors"
+                            title="Share"
+                        >
+                            <i className="fas fa-share text-white text-lg"></i>
+                        </button>
+                    )}
+                    <button
+                        onClick={onHomeClick}
+                        className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    >
+                        <HomeIcon />
+                    </button>
+                </div>
+            </div>
+        );
+
+        // Bottom Navigation Component
+        const BottomNav = ({ onPrev, onNext, currentPage, totalPages, pathTitle, enableNextOnLastScreen = false }) => {
+            const isNextDisabled = enableNextOnLastScreen ? false : (currentPage === totalPages);
+            return (
+            <div className="fixed bottom-0 left-0 right-0 z-10 flex items-center justify-between p-6 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={onPrev}
+                        disabled={currentPage === 1}
+                        className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${
+                            currentPage === 1 
+                                ? 'bg-gray-700 cursor-not-allowed opacity-30' 
+                                : 'bg-gray-800 opacity-80 hover:bg-gray-700'
+                        }`}
+                    >
+                        <ArrowLeft />
+                    </button>
+                    <div className="text-right font-heading">
+                        <span className="text-blue-400 text-sm font-normal">{pathTitle}</span>
+                        <span className="text-white/80 text-sm ml-2">{currentPage}/{totalPages}</span>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="text-white/70 text-sm">swipe or</span>
+                    <button
+                        onClick={onNext}
+                        disabled={isNextDisabled}
+                        className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${
+                            isNextDisabled 
+                                ? 'bg-gray-700 cursor-not-allowed opacity-50' 
+                                : 'bg-blue-600 hover:bg-blue-700'
+                        }`}
+                    >
+                        <ArrowRight />
+                    </button>
+                </div>
+            </div>
+            );
+        };
+
+        // Home Page
+        const HomePage = ({ content = {}, onPathClick, onShareClick, onLocaleChange, currentLocale = 'en', showContentImmediately = false, contentLoading = false, contentError = null }) => {
+            const home = content.title != null ? content : DEFAULT_CONTENT.home;
+            const { useState, useEffect, useRef } = React;
+            const [contentVisible, setContentVisible] = useState(showContentImmediately);
+            const [buttonVisible, setButtonVisible] = useState(!showContentImmediately);
+            const [isFadingOut, setIsFadingOut] = useState(false);
+            const [runEntryAnimation, setRunEntryAnimation] = useState(!showContentImmediately);
+            const [langMenuOpen, setLangMenuOpen] = useState(false);
+            const langMenuRef = useRef(null);
+            
+            const handleButtonClick = () => {
+                // Hide button first
+                setButtonVisible(false);
+                
+                // First show the gradient overlay
+                const overlay = document.querySelector('.gradient-overlay');
+                if (overlay) {
+                    overlay.classList.add('visible');
+                }
+                
+                // Then show content after a short delay so entry animation runs
+                setTimeout(() => {
+                    setContentVisible(true);
+                }, 300);
+            };
+            
+            // Show content and re-trigger entry animation when coming from a path
+            useEffect(() => {
+                if (showContentImmediately) {
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.add('visible');
+                    }
+                    setButtonVisible(false);
+                    setContentVisible(true);
+                    setRunEntryAnimation(false);
+                    const t = setTimeout(() => setRunEntryAnimation(true), 50);
+                    return () => clearTimeout(t);
+                }
+            }, [showContentImmediately]);
+            
+            // Reset to button state when showContentImmediately becomes false (navigating to path)
+            useEffect(() => {
+                if (!showContentImmediately && contentVisible) {
+                    setIsFadingOut(true);
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
+                    const t = setTimeout(() => {
+                        setContentVisible(false);
+                        setIsFadingOut(false);
+                        setButtonVisible(true);
+                        setRunEntryAnimation(true);
+                    }, 800);
+                    return () => clearTimeout(t);
+                }
+            }, [showContentImmediately]);
+            
+            // Handle fade out when resetting (triggered by parent)
+            useEffect(() => {
+                // This will be triggered when the app resets
+                const handleReset = () => {
+                    setIsFadingOut(true);
+                    const overlay = document.querySelector('.gradient-overlay');
+                    if (overlay) {
+                        overlay.classList.remove('visible');
+                    }
+                    setTimeout(() => {
+                        setContentVisible(false);
+                        setIsFadingOut(false);
+                        setButtonVisible(true);
+                    }, 800);
+                };
+                
+                // Listen for reset events (we'll trigger this from App component)
+                window.addEventListener('app-reset', handleReset);
+                return () => window.removeEventListener('app-reset', handleReset);
+            }, []);
+            useEffect(() => {
+                if (!langMenuOpen) return;
+                const close = (e) => {
+                    if (langMenuRef.current && !langMenuRef.current.contains(e.target)) setLangMenuOpen(false);
+                };
+                document.addEventListener('click', close);
+                return () => document.removeEventListener('click', close);
+            }, [langMenuOpen]);
+
+            return (
+                <div className="content flex flex-col items-center justify-center min-h-screen px-6 py-12 relative">
+                    <button 
+                        onClick={handleButtonClick}
+                        className="ghost-button"
+                        style={{ 
+                            position: 'absolute',
+                            bottom: '33.33%',
+                            transform: 'translateY(50%)',
+                            opacity: buttonVisible ? 1 : 0,
+                            transition: 'opacity 0.8s ease-out',
+                            pointerEvents: buttonVisible ? 'auto' : 'none',
+                            zIndex: buttonVisible ? 10 : 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.75rem'
+                        }}
+                    >
+                        <img src="images/logo.png" alt="Logo" className="h-6 w-auto relative z-10" />
+                        <span className="relative z-10 font-heading">Moonshot</span>
+                    </button>
+                    {contentVisible && (
+                        // Content state: Show all elements with animations
+                        <div style={{ 
+                            opacity: isFadingOut ? 0 : 1, 
+                            transform: isFadingOut ? 'translateY(-30px)' : 'translateY(0)',
+                            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out'
+                        }}>
+                            <div className={`text-center mb-8 max-w-2xl mx-auto home-content font-heading ${contentVisible && !isFadingOut && (runEntryAnimation || !showContentImmediately) ? 'visible' : ''} animate-delay-100`}>
+                                <div className="flex justify-center mb-8">
+                                    <img src="images/logo.png" alt="Logo" className="h-20 w-auto" />
+                                </div>
+                                <h2 className="text-white text-5xl font-bold mb-8">{home.title}</h2>
+                                <div className="text-center mb-12 font-inter">
+                                    <span className="text-blue-400 text-lg font-bold">{(home.subtitlePrefix != null && home.subtitlePrefix !== '') ? home.subtitlePrefix : (home.subtitleHighlight || '')}</span>
+                                    {(home.subtitleSuffix != null && home.subtitleSuffix !== '') ? (
+                                        <span className="text-white text-lg ml-2">{home.subtitleSuffix}</span>
+                                    ) : null}
+                                </div>
+                            </div>
+
+                            <div className={`w-full max-w-2xl mx-auto home-content ${contentVisible && (runEntryAnimation || !showContentImmediately) ? 'visible' : ''} animate-delay-300`}>
+                                <div 
+                                    onClick={() => onPathClick('what')}
+                                    className="bg-slate-800/55 backdrop-blur-sm rounded-2xl mb-6 cursor-pointer hover:bg-slate-700/65 transition-colors duration-150 border border-slate-700/50 hover:border-blue-500/50 home-content animate-delay-400 overflow-hidden"
+                                    style={{ opacity: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 1 : 0, transform: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 'translateY(0)' : 'translateY(30px)' }}
+                                >
+                                    <div className="p-6 flex items-center justify-between">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                                <i className="fas fa-bullseye text-blue-500 text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg mb-1">{(home.pathCards && home.pathCards[0]) ? home.pathCards[0].title : 'What it means for you'}</h3>
+                                                <p className="text-gray-400 text-sm">{(home.pathCards && home.pathCards[0]) ? home.pathCards[0].subtitle : 'Understand the mission'}</p>
+                                            </div>
+                                        </div>
+                                        <i className="fas fa-chevron-right text-white text-lg"></i>
+                                    </div>
+                                </div>
+                                <div 
+                                    onClick={() => onPathClick('why')}
+                                    className="bg-slate-800/55 backdrop-blur-sm rounded-2xl mb-6 cursor-pointer hover:bg-slate-700/65 transition-colors duration-150 border border-slate-700/50 hover:border-blue-500/50 home-content animate-delay-500 overflow-hidden"
+                                    style={{ opacity: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 1 : 0, transform: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 'translateY(0)' : 'translateY(30px)' }}
+                                >
+                                    <div className="p-6 flex items-center justify-between">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                                <i className="fas fa-shield text-blue-500 text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg mb-1">{(home.pathCards && home.pathCards[1]) ? home.pathCards[1].title : 'Why it matters for you'}</h3>
+                                                <p className="text-gray-400 text-sm">{(home.pathCards && home.pathCards[1]) ? home.pathCards[1].subtitle : 'Discover the impact'}</p>
+                                            </div>
+                                        </div>
+                                        <i className="fas fa-chevron-right text-white text-lg"></i>
+                                    </div>
+                                </div>
+                                <div 
+                                    onClick={() => onPathClick('how')}
+                                    className="bg-slate-800/55 backdrop-blur-sm rounded-2xl mb-6 cursor-pointer hover:bg-slate-700/65 transition-colors duration-150 border border-slate-700/50 hover:border-blue-500/50 home-content animate-delay-600 overflow-hidden"
+                                    style={{ opacity: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 1 : 0, transform: (contentVisible && (runEntryAnimation || !showContentImmediately)) ? 'translateY(0)' : 'translateY(30px)' }}
+                                >
+                                    <div className="p-6 flex items-center justify-between">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="flex-shrink-0">
+                                                <i className="fas fa-road text-blue-500 text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-white font-bold text-lg mb-1">{(home.pathCards && home.pathCards[2]) ? home.pathCards[2].title : 'How you get there'}</h3>
+                                                <p className="text-gray-400 text-sm">{(home.pathCards && home.pathCards[2]) ? home.pathCards[2].subtitle : 'Explore the roadmap'}</p>
+                                            </div>
+                                        </div>
+                                        <i className="fas fa-chevron-right text-white text-lg"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                    )}
+                    {contentVisible && (
+                        <>
+                            {onLocaleChange && (
+                                <div className="fixed bottom-8 left-8 flex flex-col items-start gap-2 z-20" ref={langMenuRef}>
+                                    {contentError && (
+                                        <div className="text-red-400 text-xs max-w-[200px] bg-slate-900/90 px-2 py-1 rounded" role="alert">{contentError}</div>
+                                    )}
+                                    <div className="relative group">
+                                        <button
+                                            type="button"
+                                            onClick={() => setLangMenuOpen(!langMenuOpen)}
+                                            disabled={contentLoading}
+                                            className="w-12 h-12 rounded-full bg-slate-700/90 hover:bg-blue-600/90 border border-slate-600/60 hover:border-blue-500/50 flex items-center justify-center text-white/90 hover:text-white transition-colors duration-150 shadow-lg disabled:opacity-70 disabled:pointer-events-none"
+                                            title="Language"
+                                            aria-label="Select language"
+                                            aria-expanded={langMenuOpen}
+                                            aria-busy={contentLoading}
+                                        >
+                                            {contentLoading ? <i className="fas fa-spinner fa-spin text-lg"></i> : <i className="fas fa-globe text-lg"></i>}
+                                        </button>
+                                        <div className={`absolute bottom-full left-0 mb-2 w-48 rounded-xl bg-slate-800 border border-slate-600 shadow-xl overflow-hidden ${langMenuOpen ? 'block' : 'hidden'} group-hover:block`}>
+                                            <button type="button" onClick={() => { onLocaleChange('en'); setLangMenuOpen(false); }} className={`w-full px-4 py-3 text-left text-sm ${currentLocale === 'en' ? 'bg-blue-600/30 text-white' : 'text-slate-300 hover:bg-slate-700'} transition-colors`}>English</button>
+                                            <button type="button" onClick={() => { onLocaleChange('no'); setLangMenuOpen(false); }} className={`w-full px-4 py-3 text-left text-sm ${currentLocale === 'no' ? 'bg-blue-600/30 text-white' : 'text-slate-300 hover:bg-slate-700'} transition-colors`}>Norsk</button>
+                                            <button type="button" onClick={() => { onLocaleChange('ja'); setLangMenuOpen(false); }} className={`w-full px-4 py-3 text-left text-sm ${currentLocale === 'ja' ? 'bg-blue-600/30 text-white' : 'text-slate-300 hover:bg-slate-700'} transition-colors`}>日本語</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {onShareClick && (
+                                <div className="fixed bottom-8 right-8 flex items-center gap-3 z-20">
+                                    <button
+                                        onClick={onShareClick}
+                                        className="w-12 h-12 rounded-full bg-slate-700/90 hover:bg-blue-600/90 border border-slate-600/60 hover:border-blue-500/50 flex items-center justify-center text-white/90 hover:text-white transition-colors duration-150 shadow-lg"
+                                        title={home.shareButtonText || 'Share'}
+                                        aria-label={home.shareButtonText || 'Share'}
+                                    >
+                                        <i className="fas fa-share text-lg"></i>
+                                    </button>
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 1
+        const WhatScreen1 = ({ content = {}, onNext, onHome, onShare }) => {
+            const c = content.screen1 || {};
+            const { useEffect, useState } = React;
+            const mainContent = c.mainContent || '';
+            const highlightPhrase = c.highlightPhrase || 'realized customer value';
+            const highlightIndex = mainContent.indexOf(highlightPhrase);
+            const cardBody = c.cardBody || '';
+            const cardBodyParts = cardBody.split(/\*([^*]+)\*/g);
+            const rawVideo = (c.videoId || '_YjpgQIX7is').trim();
+            const youtubeId = rawVideo.replace(/^.*(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+).*$/, '$1') || '_YjpgQIX7is';
+            const thumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`;
+            const thumbnailUrlFallback = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`;
+            const parseStartTime = (v) => {
+                if (v == null || v === '') return 0;
+                if (typeof v === 'number' && !isNaN(v)) return Math.max(0, Math.floor(v));
+                const s = String(v).trim();
+                if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10));
+                const parts = s.split(':').map(p => parseInt(p, 10));
+                if (parts.some(n => isNaN(n))) return 0;
+                if (parts.length === 2) return Math.max(0, parts[0] * 60 + parts[1]);
+                if (parts.length === 3) return Math.max(0, parts[0] * 3600 + parts[1] * 60 + parts[2]);
+                return 0;
+            };
+            const startSec = parseStartTime(c.videoStartTime ?? c.videoStartSeconds);
+            const embedUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=1${startSec > 0 ? '&start=' + startSec : ''}`;
+            const wantAutoplay = c.videoAutoplay === true || (typeof c.videoAutoplay === 'string' && /^(1|true|yes)$/i.test(String(c.videoAutoplay).trim()));
+            const [mounted, setMounted] = useState(false);
+            const [videoPlaying, setVideoPlaying] = useState(!!wantAutoplay);
+
+            useEffect(() => {
+                setMounted(true);
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => { el.style.animation = ''; }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'The what'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'What is 100 x 35?'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">
+                            {highlightIndex >= 0 ? (
+                                <>
+                                    {mainContent.slice(0, highlightIndex)}
+                                    <span className="text-blue-300">{highlightPhrase}</span>
+                                    {mainContent.slice(highlightIndex + highlightPhrase.length)}
+                                </>
+                            ) : mainContent}
+                        </p>
+                        <div className="relative rounded-2xl overflow-hidden mt-6 p-6 animate-fade-in-up animate-delay-200 bg-blue-900/90 border border-slate-600/40">
+                            <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-blue-500/20 -translate-y-1/2 translate-x-1/2" />
+                            <div className="absolute top-0 right-8 w-24 h-24 rounded-full bg-blue-400/15 -translate-y-1/2 translate-x-1/2" />
+                            <div className="relative">
+                                <h2 className="text-white text-2xl font-bold mb-4">{c.cardTitle || '100X35 is not just a slogan'}</h2>
+                                <p className="text-white/90 text-base leading-relaxed">
+                                    {cardBodyParts.map((part, i) => i % 2 === 1 ? <em key={i}>{part}</em> : part)}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="mt-8 animate-fade-in-up animate-delay-300">
+                            {videoPlaying ? (
+                                <div className="relative w-full rounded-xl overflow-hidden border border-slate-600/50 bg-black" style={{ aspectRatio: '16/9' }}>
+                                    <iframe
+                                        src={embedUrl}
+                                        title="Video"
+                                        className="absolute inset-0 w-full h-full"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                    />
+                                </div>
+                            ) : (
+                                <button
+                                    type="button"
+                                    onClick={() => setVideoPlaying(true)}
+                                    className="block w-full rounded-xl overflow-hidden border border-slate-600/50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+                                    style={{ aspectRatio: '16/9' }}
+                                    aria-label="Play video"
+                                >
+                                    <span className="relative block w-full h-full">
+                                        <img
+                                            src={thumbnailUrl}
+                                            alt="Video thumbnail"
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => { e.target.onerror = null; e.target.src = thumbnailUrlFallback; }}
+                                        />
+                                        <span className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors">
+                                            <span className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+                                                <i className="fas fa-play text-white text-2xl ml-1"></i>
+                                            </span>
+                                        </span>
+                                    </span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                    <BottomNav onPrev={() => {}} onNext={onNext} currentPage={1} totalPages={3} pathTitle={content.pathTitle || 'What is 100 × 35?'} />
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 2
+        const WhatScreen2 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen2 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'The what'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'Realized customer value, not just potential'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-chart-bar text-white text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'Core Principles'}</p>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-300">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-blue-400 rounded-lg p-3 flex-shrink-0"><i className="fas fa-chart-line text-white text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2"><span className="text-blue-400">{c.principle1Title || ''}</span></h3>
+                                        <p className="text-white/70">{c.principle1Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-400">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-purple-400 rounded-lg p-3 flex-shrink-0"><i className="fas fa-calendar-check text-white text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2"><span className="text-purple-400">{c.principle2Title || ''}</span></h3>
+                                        <p className="text-white/70">{c.principle2Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-500">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-green-400 rounded-lg p-3 flex-shrink-0"><i className="fas fa-check-circle text-white text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2"><span className="text-green-400">{c.principle3Title || ''}</span></h3>
+                                        <p className="text-white/70">{c.principle3Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={2} totalPages={3} pathTitle={content.pathTitle || 'What is 100 × 35?'} />
+                </div>
+            );
+        };
+
+        // What is Moonshot - Screen 3
+        const WhatScreen3 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen3 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'The what'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || '5 levels to track value'}</h1>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-road text-white text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'The Journey to Proof'}</p>
+                        </div>
+                        <div className="relative">
+                            <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-white/20 transform -translate-x-1/2"></div>
+                            <div className="space-y-3">
+                                <div className="flex items-start relative animate-fade-in-up animate-delay-300">
+                                    <div className="flex-1 pr-6 text-right">
+                                        <h3 className="text-red-400 font-bold text-xl mb-2">{c.level1Title || 'Value Estimated'}</h3>
+                                        <p className="text-white/70">{c.level1Body || ''}</p>
+                                    </div>
+                                    <div className="bg-red-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0 font-bold text-white relative z-10">1</div>
+                                    <div className="flex-1 pl-6"></div>
+                                </div>
+                                <div className="flex items-start relative -mt-8 animate-fade-in-up animate-delay-400">
+                                    <div className="flex-1 pr-6"></div>
+                                    <div className="bg-orange-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0 font-bold text-white relative z-10">2</div>
+                                    <div className="flex-1 pl-6">
+                                        <h3 className="text-orange-400 font-bold text-xl mb-2">{c.level2Title || 'Customer Agreed'}</h3>
+                                        <p className="text-white/70">{c.level2Body || ''}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start relative animate-fade-in-up animate-delay-500">
+                                    <div className="flex-1 pr-6 text-right">
+                                        <h3 className="text-yellow-400 font-bold text-xl mb-2">{c.level3Title || 'Value Realized'}</h3>
+                                        <p className="text-white/70">{c.level3Body || ''}</p>
+                                    </div>
+                                    <div className="bg-yellow-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0 font-bold text-white relative z-10">3</div>
+                                    <div className="flex-1 pl-6"></div>
+                                </div>
+                                <div className="flex items-start relative animate-fade-in-up animate-delay-600">
+                                    <div className="flex-1 pr-6"></div>
+                                    <div className="bg-teal-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0 font-bold text-white relative z-10">4</div>
+                                    <div className="flex-1 pl-6">
+                                        <h3 className="text-teal-400 font-bold text-xl mb-2">{c.level4Title || 'Value Measured'}</h3>
+                                        <p className="text-white/70">{c.level4Body || ''}</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start relative animate-fade-in-up animate-delay-700">
+                                    <div className="flex-1 pr-6 text-right">
+                                        <h3 className="text-green-400 font-bold text-xl mb-2">{c.level5Title || 'Value Made Public'}</h3>
+                                        <p className="text-white/70">{c.level5Body || ''}</p>
+                                    </div>
+                                    <div className="bg-green-500 rounded-lg w-10 h-10 flex items-center justify-center flex-shrink-0 font-bold text-white relative z-10">5</div>
+                                    <div className="flex-1 pl-6"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={3} totalPages={3} pathTitle={content.pathTitle || 'What is 100 × 35?'} enableNextOnLastScreen={true} />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 1
+        const WhyScreen1 = ({ content = {}, onNext, onHome, onShare }) => {
+            const c = content.screen1 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'Why it matters'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'Why 100 × 35 matters'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-chart-line text-orange-500 text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'The Stark Reality'}</p>
+                        </div>
+                        <div className="rounded-xl p-6 mb-6 animate-fade-in-up animate-delay-300" style={{ backgroundColor: 'rgba(120, 53, 15, 0.4)', border: '1px solid rgba(251, 146, 60, 0.3)' }}>
+                            <div className="flex items-center space-x-3 mb-4">
+                                <div className="flex items-center space-x-1">
+                                    <i className="fas fa-coins text-orange-500 text-lg"></i>
+                                    <i className="fas fa-coins text-orange-500 text-lg"></i>
+                                    <i className="fas fa-coins text-orange-500 text-lg"></i>
+                                </div>
+                                <h3 className="text-white font-bold text-xl">{c.trueCostTitle || 'The True Cost'}</h3>
+                            </div>
+                            <p className="text-white/70 mb-6 leading-relaxed">{c.trueCostBody || ''}</p>
+                            <div className="space-y-4">
+                                <div className="flex items-start space-x-3 animate-fade-in-up animate-delay-400">
+                                    <i className="fas fa-money-bill-wave text-orange-500 text-xl flex-shrink-0 mt-1"></i>
+                                    <p className="text-white/70">{c.bullet1 || ''}</p>
+                                </div>
+                                <div className="flex items-start space-x-3 animate-fade-in-up animate-delay-500">
+                                    <i className="fas fa-clock text-orange-500 text-xl flex-shrink-0 mt-1"></i>
+                                    <p className="text-white/70">{c.bullet2 || ''}</p>
+                                </div>
+                                <div className="flex items-start space-x-3 animate-fade-in-up animate-delay-600">
+                                    <i className="fas fa-users text-orange-500 text-xl flex-shrink-0 mt-1"></i>
+                                    <p className="text-white/70">{c.bullet3 || ''}</p>
+                                </div>
+                                <div className="flex items-start space-x-3 animate-fade-in-up animate-delay-700">
+                                    <i className="fas fa-shield text-orange-500 text-xl flex-shrink-0 mt-1"></i>
+                                    <p className="text-white/70">{c.bullet4 || ''}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={() => {}} onNext={onNext} currentPage={1} totalPages={3} pathTitle={content.pathTitle || 'Why 100 × 35 Matters'} />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 2
+        const WhyScreen2 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen2 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'Why it matters'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'Value assurance is our differentiator'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-shield text-green-500 text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'Pillars of Value Assurance'}</p>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-300">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-gray-800 rounded-lg p-3 flex-shrink-0 flex items-center justify-center"><i className="fas fa-arrow-right text-white text-sm"></i></div>
+                                    <div className="flex-1">
+                                        <h3 className="text-white font-bold text-xl mb-2">
+                                            <span className="text-red-400 line-through">{c.pillar1From || 'Technology-First'}</span>
+                                            <span className="mx-2 text-white">→</span>
+                                            <span className="text-green-400">{c.pillar1To || 'Value-First'}</span>
+                                        </h3>
+                                        <p className="text-white/70">{c.pillar1Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-400">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-gray-800 rounded-lg p-3 flex-shrink-0 flex items-center justify-center"><i className="fas fa-arrow-right text-white text-sm"></i></div>
+                                    <div className="flex-1">
+                                        <h3 className="text-white font-bold text-xl mb-2">
+                                            <span className="text-red-400 line-through">{c.pillar2From || 'Pilot Success'}</span>
+                                            <span className="mx-2 text-white">→</span>
+                                            <span className="text-green-400">{c.pillar2To || 'Scaled Impact'}</span>
+                                        </h3>
+                                        <p className="text-white/70">{c.pillar2Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-500">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-gray-800 rounded-lg p-3 flex-shrink-0 flex items-center justify-center"><i className="fas fa-arrow-right text-white text-sm"></i></div>
+                                    <div className="flex-1">
+                                        <h3 className="text-white font-bold text-xl mb-2">
+                                            <span className="text-red-400 line-through">{c.pillar3From || 'Vendor Promises'}</span>
+                                            <span className="mx-2 text-white">→</span>
+                                            <span className="text-green-400">{c.pillar3To || 'Customer Validation'}</span>
+                                        </h3>
+                                        <p className="text-white/70">{c.pillar3Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-600">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-gray-800 rounded-lg p-3 flex-shrink-0 flex items-center justify-center"><i className="fas fa-arrow-right text-white text-sm"></i></div>
+                                    <div className="flex-1">
+                                        <h3 className="text-white font-bold text-xl mb-2">
+                                            <span className="text-red-400 line-through">{c.pillar4From || 'Opaque Metrics'}</span>
+                                            <span className="mx-2 text-white">→</span>
+                                            <span className="text-green-400">{c.pillar4To || 'Transparent KPIs'}</span>
+                                        </h3>
+                                        <p className="text-white/70">{c.pillar4Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={2} totalPages={3} pathTitle={content.pathTitle || 'Why 100 × 35 Matters'} />
+                </div>
+            );
+        };
+
+        // Why it matters - Screen 3
+        const WhyScreen3 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen3 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'Why it matters'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'Culture Shift'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-graduation-cap text-orange-500 text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'Behavioral Transformation'}</p>
+                        </div>
+                        <div className="space-y-6">
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-300">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-orange-500/20 rounded-lg p-3 flex-shrink-0"><i className="fas fa-comments text-orange-500 text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2">{c.item1Title || 'In Every Conversation'}</h3>
+                                        <p className="text-white/70">{c.item1Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-400">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-blue-500/20 rounded-lg p-3 flex-shrink-0"><i className="fas fa-clipboard-check text-blue-500 text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2">{c.item2Title || 'In Project Planning'}</h3>
+                                        <p className="text-white/70">{c.item2Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-500">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-purple-500/20 rounded-lg p-3 flex-shrink-0"><i className="fas fa-file-lines text-purple-500 text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2">{c.item3Title || 'In Performance Reviews'}</h3>
+                                        <p className="text-white/70">{c.item3Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl p-2 animate-fade-in-up animate-delay-600">
+                                <div className="flex items-start space-x-4">
+                                    <div className="bg-green-500/20 rounded-lg p-3 flex-shrink-0"><i className="fas fa-trophy text-green-500 text-xl"></i></div>
+                                    <div>
+                                        <h3 className="text-white font-bold text-xl mb-2">{c.item4Title || 'In Celebrations'}</h3>
+                                        <p className="text-white/70">{c.item4Body || ''}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={3} totalPages={3} pathTitle={content.pathTitle || 'Why 100 × 35 Matters'} enableNextOnLastScreen={true} />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 1
+        const HowScreen1 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen1 || {};
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'How we get there'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'How we reach $100B by 2035'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-flag text-yellow-400 text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'Key Milestones'}</p>
+                        </div>
+                        <div className="relative">
+                            <div className="absolute left-8 top-0 bottom-0 w-0.5" style={{ borderLeft: '2px dashed rgba(255, 255, 255, 0.3)', height: '100%' }}></div>
+                            <div className="space-y-6">
+                                <div className="rounded-xl p-2 animate-fade-in-up animate-delay-300">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="bg-blue-500 rounded-lg p-3 flex-shrink-0 relative z-10"><i className="fas fa-play text-white text-xl"></i></div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{c.milestone1Title || 'Milestone 1'}</h3>
+                                            <p className="text-white/70">{c.milestone1Body || ''}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0"><p className="text-blue-400 font-semibold">{c.milestone1Date || 'Q1 2024'}</p></div>
+                                    </div>
+                                </div>
+                                <div className="rounded-xl p-2 animate-fade-in-up animate-delay-400">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="bg-purple-500 rounded-lg p-3 flex-shrink-0 relative z-10"><i className="fas fa-rocket text-white text-xl"></i></div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{c.milestone2Title || 'Milestone 2'}</h3>
+                                            <p className="text-white/70">{c.milestone2Body || ''}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0"><p className="text-purple-400 font-semibold">{c.milestone2Date || 'Q3 2025'}</p></div>
+                                    </div>
+                                </div>
+                                <div className="rounded-xl p-2 animate-fade-in-up animate-delay-500">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="rounded-lg p-3 flex-shrink-0 relative z-10" style={{ backgroundColor: '#C2410C' }}><i className="fas fa-rocket text-white text-xl"></i></div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{c.milestone3Title || 'Milestone 3'}</h3>
+                                            <p className="text-white/70">{c.milestone3Body || ''}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0"><p className="font-semibold" style={{ color: '#C2410C' }}>{c.milestone3Date || 'Q4 2028'}</p></div>
+                                    </div>
+                                </div>
+                                <div className="rounded-xl p-2 animate-fade-in-up animate-delay-600">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="bg-pink-500 rounded-lg p-3 flex-shrink-0 relative z-10"><i className="fas fa-chart-line text-white text-xl"></i></div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{c.milestone4Title || 'Milestone 4'}</h3>
+                                            <p className="text-white/70">{c.milestone4Body || ''}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0"><p className="text-pink-400 font-semibold">{c.milestone4Date || 'Q2 2032'}</p></div>
+                                    </div>
+                                </div>
+                                <div className="rounded-xl p-2 animate-fade-in-up animate-delay-700">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="bg-green-500 rounded-lg p-3 flex-shrink-0 relative z-10"><i className="fas fa-flag-checkered text-white text-xl"></i></div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{c.milestone5Title || 'Milestone 5'}</h3>
+                                            <p className="text-white/70">{c.milestone5Body || ''}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0"><p className="text-green-400 font-semibold">{c.milestone5Date || 'Dec 2035'}</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={1} totalPages={1} pathTitle={content.pathTitle || 'How we get there'} enableNextOnLastScreen={true} />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 2
+        const HowScreen2 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const c = content.screen2 || {};
+            const roles = (c.roles && c.roles.length) ? c.roles : [
+                { title: 'Account Executive', tagline: 'The Architect of Value', body: 'Uses the Value Launchpad to frame deals around business outcomes and ensures value is baked into SOWs.' },
+                { title: 'Product Manager', tagline: 'The Builder of Value', body: 'Prioritizes features that drive measurable outcomes and gives customers tools to track financial & value levers.' },
+                { title: 'Project Manager', tagline: 'The Deliverer of Value', body: 'Runs projects against business goals, not just activity. Ensures milestones reflect impact on the customer\'s P&L.' },
+                { title: 'Engineer / Data Scientist', tagline: 'The Designer of Value', body: 'Turns data and models into outcomes, framing results in terms of business KPIs and real-world decisions.' },
+                { title: 'CBE / TAM', tagline: 'The Accelerator of Value', body: 'Monitors adoption and links technical performance back to agreed business outcomes.' },
+                { title: 'Marketing', tagline: 'The Storyteller of Value', body: 'Converts Level 5 successes into public stories that prove Cognite\'s value assurance.' },
+                { title: 'P&O Partner', tagline: 'The Enabler of Value Culture', body: 'Recruits and develops talent that thinks in terms of customer value.' },
+                { title: 'Finance Partner', tagline: 'The Guardian of Value', body: 'Aligns commercial models with customer success and champions rigorous value measurement.' }
+            ];
+            const { useEffect, useState } = React;
+            const [mounted, setMounted] = useState(false);
+            
+            useEffect(() => {
+                setMounted(true);
+                // Reset animations by removing and re-adding classes
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+            
+            const roleGradients = ['linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.05) 100%)', 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(168, 85, 247, 0.05) 100%)', 'linear-gradient(135deg, rgba(249, 115, 22, 0.15) 0%, rgba(249, 115, 22, 0.05) 100%)', 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%)', 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%)', 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)', 'linear-gradient(135deg, rgba(20, 184, 166, 0.15) 0%, rgba(20, 184, 166, 0.05) 100%)', 'linear-gradient(135deg, rgba(234, 179, 8, 0.15) 0%, rgba(234, 179, 8, 0.05) 100%)'];
+            const roleColors = ['bg-blue-500', 'bg-purple-500', 'bg-orange-500', 'bg-green-500', 'bg-pink-500', 'bg-red-500', 'bg-teal-500', 'bg-yellow-500'];
+            const roleBadgeClasses = ['bg-blue-500/30 text-blue-400', 'bg-purple-500/30 text-purple-400', 'bg-orange-500/30 text-orange-400', 'bg-green-500/30 text-green-400', 'bg-pink-500/30 text-pink-400', 'bg-red-500/30 text-red-400', 'bg-teal-500/30 text-teal-400', 'bg-yellow-500/30 text-yellow-400'];
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'How we get there'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-6 animate-fade-in-up font-heading">{c.headline || 'It takes all of us'}</h1>
+                        <p className="text-white text-xl mb-8 leading-relaxed animate-fade-in-up animate-delay-100">{c.mainContent || ''}</p>
+                        <div className="flex items-center space-x-2 mb-12 animate-fade-in-up animate-delay-200">
+                            <i className="fas fa-briefcase text-blue-500 text-lg"></i>
+                            <p className="text-white text-lg">{c.sectionLabel || 'Role Mandates'}</p>
+                        </div>
+                        <div className="space-y-6">
+                            {roles.map((role, i) => (
+                                <div key={i} className={'rounded-xl p-4 animate-fade-in-up animate-delay-' + (300 + i * 100)} style={{ background: roleGradients[i % 8] }}>
+                                    <div className="flex items-start space-x-4">
+                                        <div className={(i === 6 ? '' : roleColors[i % 8]) + ' rounded-lg p-3 flex-shrink-0'} style={i === 6 ? { backgroundColor: '#14B8A6' } : {}}>
+                                            <i className="fas fa-briefcase text-white text-xl"></i>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="text-white font-bold text-xl mb-2">{role.title}</h3>
+                                            <span className={'inline-block font-semibold text-sm px-3 py-1 rounded-full mb-3 ' + (i === 6 ? 'bg-teal-500/30 text-teal-400' : roleBadgeClasses[i % 8])}>{role.tagline}</span>
+                                            <p className="text-white/70">{role.body}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <BottomNav onPrev={onPrev} onNext={onNext} currentPage={2} totalPages={3} pathTitle={content.pathTitle || 'How we get there'} />
+                </div>
+            );
+        };
+
+        // How will we get there - Screen 3 (Goal progression)
+        const HowScreen3 = ({ content = {}, onPrev, onNext, onHome, onShare }) => {
+            const { useEffect, useState, useRef } = React;
+            const [mounted, setMounted] = useState(false);
+            const [activeTab, setActiveTab] = useState('overview');
+            const chartRef = useRef(null);
+            const yearChartRef = useRef(null);
+            const chartInstance = useRef(null);
+            const yearChartInstance = useRef(null);
+            const c3 = content.screen3 || {};
+            const startYear = 2025;
+            const dueYear = 2035;
+            const goalB = 100;
+            const valueStart2025 = typeof c3.valueStart2025 === 'number' ? c3.valueStart2025 : 5;
+            const valueEnd2025 = typeof c3.valueEnd2025 === 'number' ? c3.valueEnd2025 : 22;
+            const ytd2026 = typeof c3.ytd2026 === 'number' ? c3.ytd2026 : 7;
+            const ytd2026JanShare = typeof c3.ytd2026JanShare === 'number' ? c3.ytd2026JanShare : 0.37;
+            const ytd2026FebShare = typeof c3.ytd2026FebShare === 'number' ? c3.ytd2026FebShare : 0.63;
+            const currentB = valueEnd2025 + ytd2026;
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const yearsTotal = dueYear - startYear;
+            const yearsElapsed = Math.max(0, currentYear - startYear);
+            const timeProgress = Math.min(1, yearsElapsed / yearsTotal);
+            const valueProgress = currentB / goalB;
+            const riskStatus = valueProgress >= timeProgress * 1.05 ? 'on-track' : valueProgress >= timeProgress * 0.85 ? 'moderate' : 'concerned';
+            const riskLabel = riskStatus === 'on-track' ? 'On track' : riskStatus === 'moderate' ? 'Moderate' : 'Concerned';
+            const riskColor = riskStatus === 'on-track' ? 'text-green-400 border-green-500/50 bg-green-500/20' : riskStatus === 'moderate' ? 'text-amber-400 border-amber-500/50 bg-amber-500/20' : 'text-red-400 border-red-500/50 bg-red-500/20';
+            const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const monthlyValue2026 = [ytd2026 * ytd2026JanShare, ytd2026 * ytd2026FebShare, null, null, null, null, null, null, null, null, null, null];
+            
+            useEffect(() => {
+                setMounted(true);
+                const timer = setTimeout(() => {
+                    const elements = document.querySelectorAll('.animate-fade-in-up');
+                    elements.forEach(el => {
+                        el.style.animation = 'none';
+                        setTimeout(() => {
+                            el.style.animation = '';
+                        }, 10);
+                    });
+                }, 50);
+                return () => clearTimeout(timer);
+            }, []);
+
+            useEffect(() => {
+                if (typeof Chart === 'undefined') return;
+                if (activeTab === 'overview' && chartRef.current) {
+                    if (yearChartInstance.current) { yearChartInstance.current.destroy(); yearChartInstance.current = null; }
+                    const years = Array.from({ length: yearsTotal + 1 }, (_, i) => startYear + i);
+                    const nowX = startYear + 1 + 2/12;
+                    const targetData = years.map((_, i) => ({ x: startYear + i, y: (i / yearsTotal) * goalB }));
+                    const actualPoints = [
+                        { x: startYear, y: valueStart2025 },
+                        { x: startYear + 1, y: valueEnd2025 },
+                        { x: nowX, y: currentB }
+                    ];
+                    const n = actualPoints.length;
+                    const actualPointBg = actualPoints.map((_, i) => i === n - 1 ? 'rgba(245, 158, 11, 0.95)' : 'rgba(59, 130, 246, 0.9)');
+                    const actualPointRadius = actualPoints.map((_, i) => i === n - 1 ? 8 : 4);
+                    if (chartInstance.current) chartInstance.current.destroy();
+                    chartInstance.current = new Chart(chartRef.current, {
+                        type: 'line',
+                        data: {
+                            datasets: [
+                                { label: 'Target ($100B by ' + dueYear + ')', data: targetData, borderColor: 'rgba(148, 163, 184, 0.8)', backgroundColor: 'rgba(148, 163, 184, 0.1)', borderWidth: 2, borderDash: [6, 4], fill: false, tension: 0, pointRadius: 0, pointHoverRadius: 4 },
+                                { label: 'Actual', data: actualPoints, borderColor: 'rgba(59, 130, 246, 1)', backgroundColor: actualPointBg, borderWidth: 2, fill: false, tension: 0.2, pointRadius: actualPointRadius, pointHoverRadius: (ctx) => ctx.dataIndex === n - 1 ? 10 : 6, spanGaps: false }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { intersect: false, mode: 'index' },
+                            plugins: {
+                                legend: { position: 'top', labels: { color: '#e2e8f0', font: { size: 12 } } },
+                                tooltip: {
+                                    filter: function(tooltipItem) { return tooltipItem.datasetIndex === 1; },
+                                    padding: 14,
+                                    titleSpacing: 10,
+                                    bodySpacing: 8,
+                                    boxPadding: 8,
+                                    titleFont: { size: 14, weight: '600' },
+                                    bodyFont: { size: 13 },
+                                    bodyAlign: 'left',
+                                    titleAlign: 'left',
+                                    backgroundColor: 'rgba(30, 41, 59, 0.96)',
+                                    borderColor: 'rgba(71, 85, 105, 0.8)',
+                                    borderWidth: 1,
+                                    cornerRadius: 8,
+                                    callbacks: {
+                                        title: function(tooltipItems) {
+                                            const item = tooltipItems[0];
+                                            const i = item.dataIndex;
+                                            if (i === 0) return '2025';
+                                            if (i === 1) return '2025 - 2026';
+                                            return '01/01/2026 - Today';
+                                        },
+                                        label: function(tooltipItem) {
+                                            if (tooltipItem.datasetIndex !== 1) return tooltipItem.formattedValue || '';
+                                            const i = tooltipItem.dataIndex;
+                                            if (i === 0) return 'Year total: $' + valueStart2025 + 'B';
+                                            if (i === 1) return 'Year total: $' + valueEnd2025 + 'B';
+                                            return 'Year to date: $' + ytd2026 + 'B';
+                                        },
+                                        afterLabel: function(tooltipItem) {
+                                            if (tooltipItem.datasetIndex === 1 && tooltipItem.dataIndex === n - 1) return 'Total: $' + currentB + 'B';
+                                            return '';
+                                        },
+                                        labelPointStyle: function(tooltipItem) {
+                                            if (tooltipItem.datasetIndex !== 1) return {};
+                                            const isOrange = tooltipItem.dataIndex === n - 1;
+                                            return { pointStyle: 'circle', backgroundColor: isOrange ? 'rgba(245, 158, 11, 1)' : 'rgba(59, 130, 246, 1)' };
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    type: 'linear',
+                                    min: startYear,
+                                    max: dueYear,
+                                    ticks: { stepSize: 1, color: '#94a3b8', maxRotation: 0 },
+                                    grid: { color: 'rgba(71, 85, 105, 0.5)' }
+                                },
+                                y: { min: 0, max: goalB, grid: { color: 'rgba(71, 85, 105, 0.5)' }, ticks: { color: '#94a3b8', callback: function(v) { return '$' + v + 'B'; } } }
+                            }
+                        }
+                    });
+                    return () => { if (chartInstance.current) { chartInstance.current.destroy(); chartInstance.current = null; } };
+                }
+                if (activeTab === 'current-year' && yearChartRef.current) {
+                    if (chartInstance.current) { chartInstance.current.destroy(); chartInstance.current = null; }
+                    const months = monthNames.slice();
+                    const barData = monthlyValue2026.map((v, i) => i <= currentMonth ? v : null);
+                    const barBgColors = monthNames.map((_, i) => {
+                        if (i > currentMonth) return 'rgba(71, 85, 105, 0.15)';
+                        if (i === currentMonth) return 'rgba(245, 158, 11, 0.85)';
+                        return 'rgba(59, 130, 246, 0.75)';
+                    });
+                    const barBorderColors = monthNames.map((_, i) => {
+                        if (i === currentMonth) return 'rgba(245, 158, 11, 1)';
+                        return 'rgba(59, 130, 246, 1)';
+                    });
+                    if (yearChartInstance.current) yearChartInstance.current.destroy();
+                    yearChartInstance.current = new Chart(yearChartRef.current, {
+                        type: 'bar',
+                        data: {
+                            labels: months,
+                            datasets: [{
+                                label: 'Realized customer value ($B)',
+                                data: barData,
+                                backgroundColor: barBgColors,
+                                borderColor: barBorderColors,
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: { intersect: false, mode: 'index' },
+                            plugins: {
+                                legend: { position: 'top', labels: { color: '#e2e8f0', font: { size: 12 } } }
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: '#94a3b8', maxRotation: 0 }
+                                },
+                                y: {
+                                    min: 0,
+                                    grid: { color: 'rgba(71, 85, 105, 0.5)' },
+                                    ticks: {
+                                        color: '#94a3b8',
+                                        callback: function(v) { return '$' + v + 'B'; }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    return () => { if (yearChartInstance.current) { yearChartInstance.current.destroy(); yearChartInstance.current = null; } };
+                }
+            }, [activeTab]);
+            
+            return (
+                <div className="content min-h-screen px-8 pt-28 pb-32">
+                    <Header onHomeClick={onHome} onShareClick={onShare} showBreadcrumb={false} breadcrumbText={content.breadcrumb || 'How we get there'} />
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-white text-4xl font-bold mb-2 animate-fade-in-up font-heading">{c3.headline || 'Customer value to date'}</h1>
+                        <p className="text-white/80 text-lg mb-6 animate-fade-in-up animate-delay-100">{c3.subhead || 'Progress toward $100B realized customer value by 2035.'}</p>
+                        <div className="flex gap-1 mb-6 animate-fade-in-up animate-delay-200">
+                            <button
+                                onClick={() => setActiveTab('overview')}
+                                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'overview' ? 'bg-blue-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white hover:bg-slate-600/60'}`}
+                            >
+                                {c3.tabOverview || 'Overview'}
+                            </button>
+                            <button
+                                onClick={() => setActiveTab('current-year')}
+                                className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'current-year' ? 'bg-blue-600 text-white' : 'bg-slate-700/60 text-slate-400 hover:text-white hover:bg-slate-600/60'}`}
+                            >
+                                {currentYear} {c3.tabCurrentYear || '(current year)'}
+                            </button>
+                        </div>
+                        <div style={{ display: activeTab === 'overview' ? 'block' : 'none' }}>
+                            <div className="rounded-2xl border border-slate-600/60 bg-slate-800/40 p-6 animate-fade-in-up animate-delay-300">
+                                <div className="text-white font-semibold text-lg mb-4">{c3.chartTitleOverview || 'Timeline & value'}</div>
+                                <div style={{ height: '420px' }}>
+                                    <canvas ref={chartRef}></canvas>
+                                </div>
+                            </div>
+                            <div className="relative rounded-2xl overflow-hidden animate-fade-in-up animate-delay-400 mt-6 p-6 bg-blue-900/90 border border-slate-600/40">
+                                <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-blue-500/20 -translate-y-1/2 translate-x-1/2" />
+                                <div className="absolute top-0 right-8 w-24 h-24 rounded-full bg-blue-400/15 -translate-y-1/2 translate-x-1/2" />
+                                <div className="relative">
+                                    <div className="text-white text-3xl font-bold mb-1">{currentB} / {goalB}B</div>
+                                    <div className="text-white/90 text-sm mb-6">{c3.trackerLabelOverview || 'Realized Customer value'}</div>
+                                    <div className="flex items-center justify-between flex-wrap gap-3">
+                                        <span className={`inline-block px-4 py-1.5 rounded-lg text-sm font-semibold uppercase text-white ${riskStatus === 'on-track' ? 'bg-green-500' : riskStatus === 'moderate' ? 'bg-amber-500' : 'bg-red-500'}`}>
+                                            {riskLabel.toUpperCase()}
+                                        </span>
+                                        <span className="text-white/90 text-sm">{dueYear - currentYear} {c3.yearsRemainingLabel || 'years remaining'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Current year tab - granular monthly view */}
+                        <div style={{ display: activeTab === 'current-year' ? 'block' : 'none' }}>
+                            <div className="rounded-2xl border border-slate-600/60 bg-slate-800/40 p-6 animate-fade-in-up animate-delay-300">
+                                <div className="text-white font-semibold text-lg mb-2">{currentYear} {c3.chartTitleYear || 'progress'}</div>
+                                <p className="text-slate-400 text-sm mb-4">{c3.yearChartSubtitle || 'Month-by-month realized customer value ($B). Amber = current month in progress.'}</p>
+                                <div style={{ height: '380px' }}>
+                                    <canvas ref={yearChartRef}></canvas>
+                                </div>
+                            </div>
+                            {/* Year view tracker card */}
+                            {(() => {
+                                const ytdValue = monthlyValue2026.slice(0, currentMonth + 1).reduce((a, b) => (a || 0) + (b || 0), 0).toFixed(1);
+                                const monthsElapsed = currentMonth + 1;
+                                return (
+                                    <div className="relative rounded-2xl overflow-hidden mt-6 p-6 animate-fade-in-up animate-delay-400 bg-blue-600 border border-blue-500/30">
+                                        <div className="absolute top-0 right-0 w-28 h-28 rounded-full bg-blue-400/30 -translate-y-1/2 translate-x-1/2" />
+                                        <div className="relative">
+                                            <div className="text-white text-3xl font-bold mb-1">{ytdValue}B {c3.thisYearLabel || 'this year'}</div>
+                                            <div className="text-white/95 text-sm mb-6">{c3.trackerLabelYear || 'Realized Customer value'}</div>
+                                            <div className="flex items-center justify-between flex-wrap gap-3">
+                                                <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${riskStatus === 'on-track' ? 'bg-green-400/90 text-green-900' : riskStatus === 'moderate' ? 'bg-amber-400/90 text-amber-900' : 'bg-red-400/90 text-red-900'}`}>
+                                                    {riskLabel.toUpperCase()}
+                                                </span>
+                                                <span className="text-white/95 text-sm">{monthsElapsed} month{monthsElapsed !== 1 ? 's' : ''}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                        </div>
+                    </div>
+
+                    <BottomNav 
+                        onPrev={onPrev} 
+                        onNext={onNext} 
+                        currentPage={3} 
+                        totalPages={3} 
+                        pathTitle={content.pathTitle || 'How we get there'}
+                        enableNextOnLastScreen={true}
+                    />
+                </div>
+            );
+        };
+
+// Initial navigation state from URL hash (for CMS iframe deep linking)
+            const getInitialNavFromHash = () => {
+                const h = (typeof window !== 'undefined' && window.location.hash || '').replace(/^#/, '');
+                if (h === 'home') return { view: 'home', path: null, screen: 1, fromPath: true };
+                if (!h) return { view: 'home', path: null, screen: 1, fromPath: false };
+                const m = h.match(/^(what|why|how)-(\d)$/);
+                if (m) return { view: 'path', path: m[1], screen: Math.min(3, Math.max(1, parseInt(m[2], 10))), fromPath: true };
+                return { view: 'home', path: null, screen: 1, fromPath: false };
+            };
+            const initialNav = getInitialNavFromHash();
+            const LOCALE_STORAGE_KEY = 'moonshot-locale';
+            const getInitialLocale = () => {
+                try {
+                    const params = typeof window !== 'undefined' && window.location && window.location.search ? new URLSearchParams(window.location.search) : null;
+                    const fromUrl = params && (params.get('locale') === 'no' || params.get('locale') === 'ja') ? params.get('locale') : null;
+                    if (fromUrl) {
+                        try { localStorage.setItem(LOCALE_STORAGE_KEY, fromUrl); } catch (e) {}
+                        return fromUrl;
+                    }
+                    const s = typeof localStorage !== 'undefined' ? localStorage.getItem(LOCALE_STORAGE_KEY) : null;
+                    return (s === 'no' || s === 'ja') ? s : 'en';
+                } catch (e) { return 'en'; }
+            };
+        const App = () => {
+            const { useRef, useEffect } = React;
+            const [locale, setLocaleState] = useState(getInitialLocale);
+            const setLocale = (next) => {
+                setLocaleState(next);
+                try { localStorage.setItem(LOCALE_STORAGE_KEY, next); } catch (e) {}
+            };
+            const [content, setContent] = useState(DEFAULT_CONTENT);
+            const [contentLoading, setContentLoading] = useState(false);
+            const [contentError, setContentError] = useState(null);
+            const [currentView, setCurrentView] = useState(initialNav.view);
+            const [currentPath, setCurrentPath] = useState(initialNav.path);
+            const [currentScreen, setCurrentScreen] = useState(initialNav.screen);
+            const [hasNavigatedFromPath, setHasNavigatedFromPath] = useState(initialNav.fromPath);
+            const [shareMenuOpen, setShareMenuOpen] = useState(false);
+            const inactivityTimerRef = useRef(null);
+            const swipeStartRef = useRef({ x: 0, y: 0 });
+            const localeRef = useRef(locale);
+            localeRef.current = locale;
+            // Fetch content from API by locale; on failure keep previous content and show error. Only apply result if it still matches current locale (avoid race).
+            useEffect(() => {
+                var requestedLocale = locale;
+                setContentLoading(true);
+                setContentError(null);
+                fetch('/api/content?locale=' + encodeURIComponent(locale), { cache: 'no-store' })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error('Content fetch failed');
+                        const ct = r.headers.get('Content-Type') || '';
+                        if (!ct.includes('application/json')) throw new Error('Invalid content type');
+                        return r.json();
+                    })
+                    .then(function(data) {
+                        if (localeRef.current !== requestedLocale) {
+                            setContentLoading(false);
+                            return;
+                        }
+                        var merged = {
+                            home: data.home != null ? data.home : DEFAULT_CONTENT.home,
+                            what: data.what != null ? data.what : DEFAULT_CONTENT.what,
+                            why: data.why != null ? data.why : DEFAULT_CONTENT.why,
+                            how: data.how != null ? data.how : DEFAULT_CONTENT.how
+                        };
+                        var ws1 = merged.what && merged.what.screen1;
+                        if (ws1 && (ws1.valueAssuranceTitle != null || (ws1.cardTitle == null && (ws1.headline != null || ws1.mainContent != null)))) {
+                            merged = { ...merged, what: { ...merged.what, screen1: DEFAULT_CONTENT.what && DEFAULT_CONTENT.what.screen1 ? DEFAULT_CONTENT.what.screen1 : ws1 } };
+                        }
+                        setContent(merged);
+                        setContentLoading(false);
+                    })
+                    .catch(function() {
+                        setContentLoading(false);
+                        if (localeRef.current === requestedLocale) setContentError('Could not load this language. Please try again.');
+                    });
+            }, [locale]);
+            // Keep gradient overlay visible on path screens (so content is readable over video), including when opened via hash (e.g. CMS preview)
+            useEffect(() => {
+                const overlay = document.querySelector('.gradient-overlay');
+                if (!overlay) return;
+                if (currentView === 'path') overlay.classList.add('visible');
+                // When home, overlay is managed by HomePage and resetToHomeButton
+            }, [currentView]);
+            const handleShareClick = () => {
+                openShareMenu(() => setShareMenuOpen(true));
+            };
+            
+            const resetToHomeButton = () => {
+                // Always reset navigation state first
+                setCurrentView('home');
+                setCurrentPath(null);
+                setCurrentScreen(1);
+                setHasNavigatedFromPath(false);
+                
+                // Hide gradient overlay
+                const overlay = document.querySelector('.gradient-overlay');
+                if (overlay) {
+                    overlay.classList.remove('visible');
+                }
+                
+                // Trigger reset event to fade out home page content if visible
+                window.dispatchEvent(new Event('app-reset'));
+            };
+            
+            const resetInactivityTimer = () => {
+                // Clear existing timer
+                if (inactivityTimerRef.current) {
+                    clearTimeout(inactivityTimerRef.current);
+                }
+                
+                // Set timer for 30 seconds - works on all screens
+                inactivityTimerRef.current = setTimeout(() => {
+                    resetToHomeButton();
+                }, 120000); // 2 minutes
+            };
+            
+            // Track user activity on all screens
+            useEffect(() => {
+                // Reset timer whenever view changes
+                resetInactivityTimer();
+                
+                const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+                
+                const handleActivity = () => {
+                    resetInactivityTimer();
+                };
+                
+                // Add event listeners
+                activityEvents.forEach(event => {
+                    window.addEventListener(event, handleActivity);
+                });
+                
+                // Cleanup
+                return () => {
+                    activityEvents.forEach(event => {
+                        window.removeEventListener(event, handleActivity);
+                    });
+                    if (inactivityTimerRef.current) {
+                        clearTimeout(inactivityTimerRef.current);
+                    }
+                };
+            }, [currentView, currentPath, currentScreen]);
+
+            const handlePathClick = (pathId) => {
+                setCurrentPath(pathId);
+                setCurrentScreen(1);
+                setCurrentView('path');
+                setHasNavigatedFromPath(true);
+            };
+
+            const handleGoToValueChart = () => {
+                setCurrentPath('how');
+                setCurrentScreen(1);
+                setCurrentView('path');
+                setHasNavigatedFromPath(true);
+            };
+
+            const handleHome = () => {
+                setCurrentView('home');
+                setCurrentPath(null);
+                setCurrentScreen(1);
+                // Keep hasNavigatedFromPath true so content shows
+            };
+
+            const handleNext = () => {
+                if (currentPath === 'what' && currentScreen < 3) {
+                    setCurrentScreen(currentScreen + 1);
+                } else if (currentPath === 'what' && currentScreen === 3) {
+                    setCurrentPath('why');
+                    setCurrentScreen(1);
+                } else if (currentPath === 'why' && currentScreen < 3) {
+                    setCurrentScreen(currentScreen + 1);
+                } else if (currentPath === 'why' && currentScreen === 3) {
+                    setCurrentPath('how');
+                    setCurrentScreen(1);
+                } else if (currentPath === 'how') {
+                    setCurrentView('home');
+                    setCurrentPath(null);
+                    setCurrentScreen(1);
+                }
+            };
+
+            const handlePrev = () => {
+                if (currentPath === 'how' && currentScreen === 1) {
+                    setCurrentPath('why');
+                    setCurrentScreen(3);
+                } else if (currentScreen > 1) {
+                    setCurrentScreen(currentScreen - 1);
+                } else {
+                    handleHome();
+                }
+            };
+
+            const SWIPE_THRESHOLD = 50;
+            const handleTouchStart = (e) => {
+                if (e.touches && e.touches.length) {
+                    swipeStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                }
+            };
+            const handleTouchEnd = (e) => {
+                if (!e.changedTouches || !e.changedTouches.length) return;
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const dx = endX - swipeStartRef.current.x;
+                const dy = endY - swipeStartRef.current.y;
+                if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD) {
+                    if (dx < 0) handleNext();
+                    else handlePrev();
+                }
+            };
+
+            const renderView = () => {
+                if (currentView === 'home') {
+                    return <HomePage content={content.home} onPathClick={handlePathClick} onShareClick={handleShareClick} onLocaleChange={setLocale} currentLocale={locale} showContentImmediately={hasNavigatedFromPath} contentLoading={contentLoading} contentError={contentError} />;
+                }
+                if (currentPath === 'what') {
+                    if (currentScreen === 1) return <WhatScreen1 content={content.what} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                    if (currentScreen === 2) return <WhatScreen2 content={content.what} onPrev={handlePrev} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                    if (currentScreen === 3) return <WhatScreen3 content={content.what} onPrev={handlePrev} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                }
+                if (currentPath === 'why') {
+                    if (currentScreen === 1) return <WhyScreen1 content={content.why} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                    if (currentScreen === 2) return <WhyScreen2 content={content.why} onPrev={handlePrev} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                    if (currentScreen === 3) return <WhyScreen3 content={content.why} onPrev={handlePrev} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                }
+                if (currentPath === 'how') {
+                    return <HowScreen1 content={content.how} onPrev={handlePrev} onNext={handleNext} onHome={handleHome} onShare={handleShareClick} />;
+                }
+                return <HomePage content={content.home} onPathClick={handlePathClick} onShareClick={handleShareClick} onLocaleChange={setLocale} currentLocale={locale} showContentImmediately={true} contentLoading={contentLoading} contentError={contentError} />;
+            };
+
+            const pathContent = renderView();
+            const isStandalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true);
+            const isMobile = typeof navigator !== 'undefined' && /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            const canShowInstall = !isStandalone && isMobile;
+            const [showIOSInstallHint, setShowIOSInstallHint] = useState(false);
+            const shareModal = shareMenuOpen && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+                    onClick={() => { setShareMenuOpen(false); setShowIOSInstallHint(false); }}
+                >
+                    <div 
+                        className="bg-slate-800 rounded-2xl p-6 shadow-xl border border-slate-600 max-w-xs w-full mx-4"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3 className="text-white font-semibold mb-4">Share</h3>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                onClick={() => { handleShareAction('email'); setShareMenuOpen(false); }}
+                                className="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                            >
+                                <i className="fas fa-envelope text-blue-400"></i>
+                                <span>Email</span>
+                            </button>
+                            <button
+                                onClick={() => { handleShareAction('sms'); setShareMenuOpen(false); }}
+                                className="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                            >
+                                <i className="fas fa-comment-sms text-blue-400"></i>
+                                <span>SMS</span>
+                            </button>
+                            {canShowInstall && (
+                                <button
+                                    onClick={() => {
+                                        if (window.__deferredInstallPrompt) {
+                                            window.__deferredInstallPrompt.prompt();
+                                            window.__deferredInstallPrompt.userChoice.then(() => { window.__deferredInstallPrompt = null; });
+                                            setShareMenuOpen(false);
+                                        } else if (isIOS) {
+                                            setShowIOSInstallHint(true);
+                                        } else {
+                                            setShareMenuOpen(false);
+                                        }
+                                    }}
+                                    className="flex items-center gap-3 w-full px-4 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-colors"
+                                >
+                                    <i className="fas fa-mobile-screen-button text-blue-400"></i>
+                                    <span>Add to Home Screen</span>
+                                </button>
+                            )}
+                        </div>
+                        {showIOSInstallHint && (
+                            <p className="mt-3 text-sm text-slate-300 bg-slate-700/50 rounded-lg p-3">
+                                In Safari, tap the <strong>Share</strong> icon (square with arrow), then <strong>Add to Home Screen</strong>.
+                            </p>
+                        )}
+                        <button
+                            onClick={() => { setShareMenuOpen(false); setShowIOSInstallHint(false); }}
+                            className="mt-4 w-full py-2 text-gray-400 hover:text-white text-sm"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            );
+            if (currentView === 'path') {
+                return (
+                    <>
+                        <div 
+                            key={locale}
+                            style={{ width: '100%', height: '100%', minHeight: '100vh', position: 'relative' }} 
+                            onTouchStart={handleTouchStart} 
+                            onTouchEnd={handleTouchEnd}
+                        >
+                            {pathContent}
+                        </div>
+                        {shareModal}
+                    </>
+                );
+            }
+            return (
+                <React.Fragment key={locale}>
+                    {pathContent}
+                    {shareModal}
+                </React.Fragment>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+
+    <script>
+        // Ensure video plays
+        const video = document.getElementById('bg-video');
+        if (video) {
+            video.addEventListener('loadeddata', () => {
+                video.play().catch(err => {
+                    console.log('Video autoplay prevented:', err);
+                });
+            });
+            video.addEventListener('canplay', () => {
+                video.play().catch(err => {
+                    console.log('Video play on canplay failed:', err);
+                });
+            });
+            video.play().catch(err => {
+                console.log('Initial play attempt:', err);
+            });
+        }
+
+        // Fullscreen functionality
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            } else if (elem.mozRequestFullScreen) {
+                elem.mozRequestFullScreen();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(function() {});
+            }
+            setTimeout(() => {
+                requestFullscreen();
+            }, 500);
+        });
+
+        document.addEventListener('click', () => {
+            if (!document.fullscreenElement && 
+                !document.webkitFullscreenElement && 
+                !document.msFullscreenElement && 
+                !document.mozFullScreenElement) {
+                requestFullscreen();
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>

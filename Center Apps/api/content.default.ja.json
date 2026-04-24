@@ -1,0 +1,155 @@
+{
+  "home": {
+    "title": "Cognite MoonShot",
+    "subtitlePrefix": "",
+    "subtitleHighlight": "100x35",
+    "subtitleSuffix": "：2035年までに1,000億ドルのお客様価値を実現。すべてのCogniteメンバーがその実現に貢献します。",
+    "shareButtonText": "共有",
+    "pathCards": [
+      { "title": "100 × 35とは？", "subtitle": "ミッションを理解する" },
+      { "title": "なぜ重要か？", "subtitle": "インパクトを発見する" },
+      { "title": "どう実現するか？", "subtitle": "ロードマップを見る" }
+    ]
+  },
+  "what": {
+    "pathTitle": "100 × 35とは？",
+    "breadcrumb": "What",
+    "screen1": {
+      "headline": "100 x 35とは？",
+      "mainContent": "Cogniteは2035年までに1,000億ドルのお客様価値を実現します。",
+      "highlightPhrase": "実現したお客様価値",
+      "cardTitle": "100X35はスローガンではありません",
+      "cardBody": "ほとんどのAI・データ施策がビジネスインパクトに届かない世界で、私たちの誓いです。100 × 35は、Cogniteが*真のビジネスインパクト*を届ける—パイロットから測定可能な成果へ—ということを示します。",
+      "videoId": "_YjpgQIX7is",
+      "videoStartTime": 0,
+      "videoAutoplay": false
+    },
+    "screen2": {
+      "headline": "実現したお客様価値、可能性ではなく",
+      "mainContent": "スケールで価値を追跡・定量化・証明します。",
+      "sectionLabel": "コア原則",
+      "principle1Title": "お客様の価値、私たちの利益ではなく。",
+      "principle1Body": "お客様のP&L（収益、コスト、リスク、持続可能性）へのインパクト。",
+      "principle2Title": "測定、願望ではなく。",
+      "principle2Body": "定量化された成果をパートナーと確保。",
+      "principle3Title": "実現、推定ではなく。",
+      "principle3Body": "お客様の業務で実際に実現した価値。"
+    },
+    "screen3": {
+      "headline": "価値を追跡する5レベル",
+      "sectionLabel": "証明への道のり",
+      "level1Title": "価値推定",
+      "level1Body": "ユースケースが提供しうる価値のCognite初期推定。",
+      "level2Title": "お客様合意",
+      "level2Body": "お客様が価値推定をレビュー・合意。",
+      "level3Title": "価値実現",
+      "level3Body": "導入後の初期データに基づく実現価値の推定。",
+      "level4Title": "価値測定",
+      "level4Body": "お客様と共に実現価値を正式に測定。",
+      "level5Title": "価値の公表",
+      "level5Body": "お客様が測定インパクトの公表に合意。"
+    }
+  },
+  "why": {
+    "pathTitle": "なぜ100 × 35が重要か",
+    "breadcrumb": "Why",
+    "screen1": {
+      "headline": "なぜ100 × 35が重要か",
+      "mainContent": "AIとデータが全産業でミッションクリティカルになる中、失敗のコストは許容できません。証明された価値を届けるパートナーが必要です。",
+      "sectionLabel": "厳しい現実",
+      "trueCostTitle": "真のコスト",
+      "trueCostBody": "この失敗率は無駄な投資以上の—機会損失、競争劣位、AI/データ施策への信頼低下を意味します。",
+      "bullet1": "ROIのない巨額のサンクコスト",
+      "bullet2": "デジタル変革の遅れ",
+      "bullet3": "チームの燃え尽き",
+      "bullet4": "競争優位の喪失"
+    },
+    "screen2": {
+      "headline": "価値保証が差別化要因",
+      "mainContent": "業界が高い失敗率に苦しむ中、Cogniteの価値保証アプローチで各施策が測定可能なインパクトを届けます。",
+      "sectionLabel": "価値保証の柱",
+      "pillar1From": "テクノロジー第一",
+      "pillar1To": "価値第一",
+      "pillar1Body": "すべての意思決定はビジネスインパクトから。",
+      "pillar2From": "パイロット成功",
+      "pillar2To": "スケールしたインパクト",
+      "pillar2Body": "成功は企業全体の採用で測定。",
+      "pillar3From": "ベンダー約束",
+      "pillar3To": "お客様検証",
+      "pillar3Body": "価値はお客様が検証。",
+      "pillar4From": "不透明な指標",
+      "pillar4To": "透明なKPI",
+      "pillar4Body": "ビジネスインパクトの明確で測定可能な証拠。"
+    },
+    "screen3": {
+      "headline": "文化の転換",
+      "mainContent": "100 × 35は私たちの考え方と働き方を変えます。「価値」は一チームの責任ではなく、共有のオペレーティングシステムです。",
+      "sectionLabel": "行動変容",
+      "item1Title": "すべての会話で",
+      "item1Body": "営業・製品・デリバリーは価値から始める。",
+      "item2Title": "プロジェクト計画で",
+      "item2Body": "各施策は承認前に価値ストーリーを定義。",
+      "item3Title": "評価で",
+      "item3Body": "成功は届けたお客様価値で測定。",
+      "item4Title": "祝いで",
+      "item4Body": "検証された価値ストーリーを祝う。"
+    }
+  },
+  "how": {
+    "pathTitle": "どう実現するか",
+    "breadcrumb": "How",
+    "screen1": {
+      "headline": "2035年までに1,000億ドルにどう到達するか",
+      "mainContent": "体系的なプロセスと継続的な学習で実現します。",
+      "sectionLabel": "主要マイルストーン",
+      "milestone1Title": "マイルストーン1",
+      "milestone1Body": "すべての顧客エンゲージメントでValue Launchpadを開始。",
+      "milestone1Date": "2024年Q1",
+      "milestone2Title": "マイルストーン2",
+      "milestone2Body": "検証されたP&Lインパクトを持つレベル4価値ストーリーを50件以上達成。",
+      "milestone2Date": "2025年Q3",
+      "milestone3Title": "マイルストーン3",
+      "milestone3Body": "価値追跡ダッシュボードを全社展開。",
+      "milestone3Date": "2028年Q4",
+      "milestone4Title": "マイルストーン4",
+      "milestone4Body": "200以上の再現可能な価値ブループリントのライブラリ。",
+      "milestone4Date": "2032年Q2",
+      "milestone5Title": "マイルストーン5",
+      "milestone5Body": "累計1,000億ドルのお客様価値を達成。",
+      "milestone5Date": "2035年12月"
+    },
+    "screen2": {
+      "headline": "私たち全員で",
+      "mainContent": "すべてのCogniteメンバーが100 × 35で役割を果たします。",
+      "sectionLabel": "ロールの役割",
+      "roles": [
+        { "title": "Account Executive", "tagline": "価値のアーキテクト", "body": "Value Launchpadでビジネス成果を軸に案件を組み立てる。" },
+        { "title": "Product Manager", "tagline": "価値のビルダー", "body": "測定可能な成果を生む機能を優先する。" },
+        { "title": "Project Manager", "tagline": "価値のデリバラー", "body": "ビジネス目標に対してプロジェクトを実行する。" },
+        { "title": "Engineer / Data Scientist", "tagline": "価値のデザイナー", "body": "データとモデルを成果に変える。" },
+        { "title": "CBE / TAM", "tagline": "価値のアクセラレーター", "body": "採用を監視し、パフォーマンスをビジネス成果に結びつける。" },
+        { "title": "Marketing", "tagline": "価値のストーリーテラー", "body": "レベル5の成功を公のストーリーに。" },
+        { "title": "P&O Partner", "tagline": "価値文化のエナジャイザー", "body": "お客様価値で考える人材を採用・育成。" },
+        { "title": "Finance Partner", "tagline": "価値のガーディアン", "body": "商業モデルをお客様成功に合わせる。" }
+      ]
+    },
+    "screen3": {
+      "headline": "これまでのお客様価値",
+      "subhead": "2035年までに1,000億ドル実現に向けた進捗。",
+      "tabOverview": "概要",
+      "tabCurrentYear": "（当年）",
+      "chartTitleOverview": "タイムラインと価値",
+      "trackerLabelOverview": "実現したお客様価値",
+      "yearsRemainingLabel": "年残り",
+      "chartTitleYear": "進捗",
+      "yearChartSubtitle": "月別実現お客様価値（10億ドル）。",
+      "trackerLabelYear": "実現したお客様価値",
+      "thisYearLabel": "今年",
+      "valueStart2025": 5,
+      "valueEnd2025": 22,
+      "ytd2026": 7,
+      "ytd2026JanShare": 0.37,
+      "ytd2026FebShare": 0.63
+    }
+  }
+}

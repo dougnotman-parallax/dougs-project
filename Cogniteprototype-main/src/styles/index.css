@@ -1,0 +1,19 @@
+@import './fonts.css';
+@import '../styles.css';
+@import './agent-chat-float-button.css';
+
+/* Inline PDF preview: citation excerpt highlights (react-pdf text layer <mark>) */
+.pdf-inline-preview .pdf-citation-highlight-mark {
+  background-color: rgba(250, 204, 21, 0.45);
+  color: inherit;
+  padding: 0 0.05em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* Ensure the React mount fills the viewport when children use h-screen / flex layouts */
+#root {
+  min-height: 100dvh;
+  min-height: 100vh;
+}

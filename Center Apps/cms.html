@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>MoonShot CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: system-ui, sans-serif; }
+        body.cms-body { height: 100vh; overflow: hidden; }
+        .cms-footer {
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            background: rgb(30 41 59);
+        }
+        .cms-nav { position: sticky; top: 0; align-self: flex-start; background: rgb(30 41 59); }
+        #drawer-overlay { opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
+        #drawer-overlay.drawer-open { opacity: 1; pointer-events: auto; }
+        #drawer-panel { transform: translateX(-100%); transition: transform 0.2s ease; }
+        #drawer-overlay.drawer-open #drawer-panel { transform: translateX(0); }
+        .cms-spinner { display: inline-block; width: 0.9em; height: 0.9em; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: cms-spin 0.7s linear infinite; vertical-align: -0.15em; margin-right: 0.35rem; }
+        @keyframes cms-spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="cms-body bg-slate-900 text-white min-h-screen flex flex-col">
+    <!-- Password gate (shown until correct password entered) -->
+    <div id="password-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 p-4">
+        <div class="w-full max-w-sm rounded-xl border border-slate-700 bg-slate-800 p-6 shadow-xl">
+            <h2 class="text-xl font-bold text-white mb-1">MoonShot CMS</h2>
+            <p class="text-slate-400 text-sm mb-4">Enter password to continue</p>
+            <form id="password-form" class="space-y-3">
+                <input type="password" id="password-input" autocomplete="current-password" placeholder="Password" class="w-full px-4 py-2.5 rounded-lg bg-slate-700 border border-slate-600 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none" />
+                <p id="password-error" class="text-sm text-red-400 hidden">Incorrect password. Try again.</p>
+                <button type="submit" class="w-full py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm transition-colors">Sign in</button>
+            </form>
+        </div>
+    </div>
+    <!-- CMS content (visible after successful login) -->
+    <div id="cms-app" class="hidden flex flex-col flex-1 min-h-0">
+    <!-- Mobile header (visible only on small screens) -->
+    <header class="flex md:hidden flex-shrink-0 items-center justify-between px-4 py-3 border-b border-slate-700 bg-slate-800 z-20">
+        <button type="button" id="btn-menu" aria-label="Open menu" class="p-2 rounded-lg text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <span class="text-sm font-medium text-slate-300">MoonShot CMS</span>
+        <div class="w-10"></div>
+    </header>
+    <div class="flex flex-1 min-h-0 overflow-hidden">
+        <!-- Left rail navigation (hidden on mobile, shown from md up) -->
+        <nav class="cms-nav hidden md:flex w-56 flex-shrink-0 border-r border-slate-700 p-4 overflow-y-auto h-full">
+            <ul class="space-y-1">
+                <li>
+                    <button type="button" data-screen="home" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700/80 transition-colors">Home</button>
+                </li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 1 (What)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="what-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="what-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 2</button></li>
+                        <li><button type="button" data-screen="what-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 3</button></li>
+                    </ul>
+                </li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 2 (Why)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="why-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="why-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 2</button></li>
+                        <li><button type="button" data-screen="why-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 3</button></li>
+                    </ul>
+                </li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 3 (How)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="how-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="how-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-500 cursor-not-allowed opacity-60" disabled>Screen 2</button></li>
+                        <li><button type="button" data-screen="how-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-500 cursor-not-allowed opacity-60" disabled>Screen 3</button></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <!-- Main content (editing column with footer locked at bottom) -->
+        <main class="flex-1 min-w-0 flex flex-col min-h-0 border-r-0 md:border-r border-slate-700">
+            <div class="flex-1 min-h-0 overflow-y-auto p-6">
+                <div class="flex flex-wrap items-center gap-4 mb-4">
+                    <h1 class="text-2xl font-bold">MoonShot Content</h1>
+                    <label class="flex items-center gap-2 text-sm text-slate-400">
+                        <span>Language</span>
+                        <select id="cms-locale" class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none">
+                            <option value="en">English</option>
+                            <option value="no">Norsk</option>
+                            <option value="ja">日本語</option>
+                        </select>
+                    </label>
+                </div>
+                <p class="text-slate-400 text-sm mb-4">Edit content for the selected screen. Preview updates in the app panel on the right.</p>
+                <div id="form-panel" class="max-w-2xl space-y-4"></div>
+            </div>
+            <footer class="flex-shrink-0 border-t border-slate-700 bg-slate-800 px-6 py-3 flex items-center justify-between gap-4 cms-footer">
+                <div id="footer-status" class="text-sm text-slate-400 min-w-0 truncate flex items-center"></div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn-clear" class="hidden px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap border border-slate-500 text-slate-300 hover:bg-slate-700 hover:border-slate-400 transition-colors">Clear changes</button>
+                    <button type="button" id="btn-save" class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 transition-colors" disabled>Save</button>
+                </div>
+            </footer>
+        </main>
+        <!-- Right column: App preview iframe (hidden on mobile) -->
+        <aside class="hidden md:flex w-[420px] flex-shrink-0 flex-col bg-slate-900 border-l border-slate-700">
+            <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider px-4 py-2 border-b border-slate-700">App preview</div>
+            <div class="flex-1 min-h-0 p-2">
+                <iframe id="app-preview" title="App preview" class="w-full h-full min-h-[600px] rounded-lg border border-slate-700 bg-slate-800" src="about:blank"></iframe>
+            </div>
+        </aside>
+    </div>
+    <!-- Mobile navigation drawer (on demand) -->
+    <div id="drawer-overlay" class="fixed inset-0 z-30 md:pointer-events-none" aria-hidden="true">
+        <div id="drawer-backdrop" class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
+        <div id="drawer-panel" class="absolute left-0 top-0 bottom-0 w-64 max-w-[85vw] bg-slate-800 border-r border-slate-700 overflow-y-auto p-4">
+            <ul class="space-y-1">
+                <li><button type="button" data-screen="home" class="nav-item w-full text-left px-3 py-2 rounded-lg text-sm font-medium hover:bg-slate-700/80 transition-colors">Home</button></li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 1 (What)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="what-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="what-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 2</button></li>
+                        <li><button type="button" data-screen="what-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 3</button></li>
+                    </ul>
+                </li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 2 (Why)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="why-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="why-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 2</button></li>
+                        <li><button type="button" data-screen="why-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 3</button></li>
+                    </ul>
+                </li>
+                <li class="pt-2">
+                    <div class="text-slate-500 text-xs font-medium px-3 mb-1">Path 3 (How)</div>
+                    <ul class="space-y-0.5 pl-2">
+                        <li><button type="button" data-screen="how-screen1" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700/80 hover:text-white transition-colors">Screen 1</button></li>
+                        <li><button type="button" data-screen="how-screen2" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-500 cursor-not-allowed opacity-60" disabled>Screen 2</button></li>
+                        <li><button type="button" data-screen="how-screen3" class="nav-item w-full text-left px-3 py-1.5 rounded-lg text-sm text-slate-500 cursor-not-allowed opacity-60" disabled>Screen 3</button></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    </div>
+    <script>
+        const CMS_AUTH_KEY = 'cms-moonshot-auth';
+        const CMS_PASSWORD = 'CogMoon26!';
+
+        function isAuthenticated() {
+            return sessionStorage.getItem(CMS_AUTH_KEY) === '1';
+        }
+        function setAuthenticated() {
+            sessionStorage.setItem(CMS_AUTH_KEY, '1');
+        }
+        function showCms() {
+            document.getElementById('password-gate').classList.add('hidden');
+            document.getElementById('cms-app').classList.remove('hidden');
+            document.getElementById('cms-app').classList.add('flex');
+        }
+        function showPasswordGate() {
+            document.getElementById('password-gate').classList.remove('hidden');
+            document.getElementById('cms-app').classList.add('hidden');
+            document.getElementById('cms-app').classList.remove('flex');
+        }
+
+        document.getElementById('password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var input = document.getElementById('password-input');
+            var err = document.getElementById('password-error');
+            if (input.value === CMS_PASSWORD) {
+                err.classList.add('hidden');
+                setAuthenticated();
+                showCms();
+                if (typeof load === 'function') load();
+            } else {
+                err.classList.remove('hidden');
+                input.select();
+                input.focus();
+            }
+        });
+
+        if (isAuthenticated()) {
+            showCms();
+        } else {
+            showPasswordGate();
+        }
+
+        const footerStatusEl = document.getElementById('footer-status');
+        const formPanel = document.getElementById('form-panel');
+        const apiBase = '';
+
+        let fullContent = null;
+        let currentScreenId = 'home';
+        let isDirty = false;
+
+        function getCmsLocale() {
+            var el = document.getElementById('cms-locale');
+            var v = el ? el.value : '';
+            return (v === 'no' || v === 'ja') ? v : 'en';
+        }
+
+        function getAppPreviewHash() {
+            if (currentScreenId === 'home') return 'home';
+            const m = currentScreenId.match(/^(what|why|how)-screen(\d)$/);
+            return m ? m[1] + '-' + m[2] : 'home';
+        }
+        function getAppPreviewUrl(cacheBust) {
+            const path = (window.location.pathname || '/').replace(/\/cms\.html$/i, '') || '/';
+            const base = window.location.origin + (path.endsWith('/') ? path + 'index.html' : path + '/index.html');
+            const hash = getAppPreviewHash();
+            const sep = base.indexOf('?') === -1 ? '?' : '&';
+            var query = cacheBust ? sep + '_t=' + Date.now() : '';
+            var locale = getCmsLocale();
+            if (locale !== 'en') query += (query ? '&' : '?') + 'locale=' + encodeURIComponent(locale);
+            return base + query + '#' + hash;
+        }
+        function loadPreviewInIframe() {
+            const iframe = document.getElementById('app-preview');
+            if (iframe) iframe.src = getAppPreviewUrl(true);
+        }
+        function refreshPreviewIframe(onLoaded) {
+            var iframe = document.getElementById('app-preview');
+            if (!iframe) {
+                if (onLoaded) onLoaded();
+                return;
+            }
+            var called = false;
+            function done() {
+                if (called) return;
+                called = true;
+                iframe.removeEventListener('load', done);
+                if (onLoaded) onLoaded();
+            }
+            iframe.addEventListener('load', done);
+            setTimeout(done, 15000);
+            iframe.src = getAppPreviewUrl(true);
+        }
+
+        const SCREENS = [
+            { id: 'home', label: 'Home', fields: [
+                { key: 'home.title', label: 'Title', type: 'text' },
+                { key: 'home.subtitlePrefix', label: 'Subtitle (prefix)', type: 'text' },
+                { key: 'home.subtitleSuffix', label: 'Subtitle (suffix)', type: 'text' },
+                { key: 'home.shareButtonText', label: 'Share button text', type: 'text' },
+                { key: 'home.pathCards[0].title', label: 'Path card 1 – Title', type: 'text' },
+                { key: 'home.pathCards[0].subtitle', label: 'Path card 1 – Subtitle', type: 'text' },
+                { key: 'home.pathCards[1].title', label: 'Path card 2 – Title', type: 'text' },
+                { key: 'home.pathCards[1].subtitle', label: 'Path card 2 – Subtitle', type: 'text' },
+                { key: 'home.pathCards[2].title', label: 'Path card 3 – Title', type: 'text' },
+                { key: 'home.pathCards[2].subtitle', label: 'Path card 3 – Subtitle', type: 'text' }
+            ]},
+            { id: 'what-screen1', label: 'What – Screen 1', fields: [
+                { key: 'what.pathTitle', label: 'Path title', type: 'text' },
+                { key: 'what.screen1.headline', label: 'Headline', type: 'text' },
+                { key: 'what.screen1.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'what.screen1.highlightPhrase', label: 'Highlight phrase (blue)', type: 'text' },
+                { key: 'what.screen1.cardTitle', label: 'Blue card – Title', type: 'text' },
+                { key: 'what.screen1.cardBody', label: 'Blue card – Body (use *text* for italic)', type: 'textarea' },
+                { key: 'what.screen1.videoId', label: 'YouTube video ID (e.g. _YjpgQIX7is)', type: 'text' },
+                { key: 'what.screen1.videoStartTime', label: 'Video start time (e.g. 1:30 or 90)', type: 'time' },
+                { key: 'what.screen1.videoAutoplay', label: 'Start video automatically', type: 'boolean' }
+            ]},
+            { id: 'what-screen2', label: 'What – Screen 2', fields: [
+                { key: 'what.screen2.headline', label: 'Headline', type: 'text' },
+                { key: 'what.screen2.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'what.screen2.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'what.screen2.principle1Title', label: 'Principle 1 – Title', type: 'text' },
+                { key: 'what.screen2.principle1Body', label: 'Principle 1 – Body', type: 'textarea' },
+                { key: 'what.screen2.principle2Title', label: 'Principle 2 – Title', type: 'text' },
+                { key: 'what.screen2.principle2Body', label: 'Principle 2 – Body', type: 'textarea' },
+                { key: 'what.screen2.principle3Title', label: 'Principle 3 – Title', type: 'text' },
+                { key: 'what.screen2.principle3Body', label: 'Principle 3 – Body', type: 'textarea' }
+            ]},
+            { id: 'what-screen3', label: 'What – Screen 3', fields: [
+                { key: 'what.screen3.headline', label: 'Headline', type: 'text' },
+                { key: 'what.screen3.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'what.screen3.level1Title', label: 'Level 1 – Title', type: 'text' },
+                { key: 'what.screen3.level1Body', label: 'Level 1 – Body', type: 'textarea' },
+                { key: 'what.screen3.level2Title', label: 'Level 2 – Title', type: 'text' },
+                { key: 'what.screen3.level2Body', label: 'Level 2 – Body', type: 'textarea' },
+                { key: 'what.screen3.level3Title', label: 'Level 3 – Title', type: 'text' },
+                { key: 'what.screen3.level3Body', label: 'Level 3 – Body', type: 'textarea' },
+                { key: 'what.screen3.level4Title', label: 'Level 4 – Title', type: 'text' },
+                { key: 'what.screen3.level4Body', label: 'Level 4 – Body', type: 'textarea' },
+                { key: 'what.screen3.level5Title', label: 'Level 5 – Title', type: 'text' },
+                { key: 'what.screen3.level5Body', label: 'Level 5 – Body', type: 'textarea' }
+            ]},
+            { id: 'why-screen1', label: 'Why – Screen 1', fields: [
+                { key: 'why.pathTitle', label: 'Path title', type: 'text' },
+                { key: 'why.screen1.headline', label: 'Headline', type: 'text' },
+                { key: 'why.screen1.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'why.screen1.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'why.screen1.trueCostTitle', label: 'True Cost – Title', type: 'text' },
+                { key: 'why.screen1.trueCostBody', label: 'True Cost – Body', type: 'textarea' },
+                { key: 'why.screen1.bullet1', label: 'Bullet 1', type: 'text' },
+                { key: 'why.screen1.bullet2', label: 'Bullet 2', type: 'text' },
+                { key: 'why.screen1.bullet3', label: 'Bullet 3', type: 'text' },
+                { key: 'why.screen1.bullet4', label: 'Bullet 4', type: 'text' }
+            ]},
+            { id: 'why-screen2', label: 'Why – Screen 2', fields: [
+                { key: 'why.screen2.headline', label: 'Headline', type: 'text' },
+                { key: 'why.screen2.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'why.screen2.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'why.screen2.pillar1From', label: 'Pillar 1 – From', type: 'text' },
+                { key: 'why.screen2.pillar1To', label: 'Pillar 1 – To', type: 'text' },
+                { key: 'why.screen2.pillar1Body', label: 'Pillar 1 – Body', type: 'textarea' },
+                { key: 'why.screen2.pillar2From', label: 'Pillar 2 – From', type: 'text' },
+                { key: 'why.screen2.pillar2To', label: 'Pillar 2 – To', type: 'text' },
+                { key: 'why.screen2.pillar2Body', label: 'Pillar 2 – Body', type: 'textarea' },
+                { key: 'why.screen2.pillar3From', label: 'Pillar 3 – From', type: 'text' },
+                { key: 'why.screen2.pillar3To', label: 'Pillar 3 – To', type: 'text' },
+                { key: 'why.screen2.pillar3Body', label: 'Pillar 3 – Body', type: 'textarea' },
+                { key: 'why.screen2.pillar4From', label: 'Pillar 4 – From', type: 'text' },
+                { key: 'why.screen2.pillar4To', label: 'Pillar 4 – To', type: 'text' },
+                { key: 'why.screen2.pillar4Body', label: 'Pillar 4 – Body', type: 'textarea' }
+            ]},
+            { id: 'why-screen3', label: 'Why – Screen 3', fields: [
+                { key: 'why.screen3.headline', label: 'Headline', type: 'text' },
+                { key: 'why.screen3.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'why.screen3.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'why.screen3.item1Title', label: 'Item 1 – Title', type: 'text' },
+                { key: 'why.screen3.item1Body', label: 'Item 1 – Body', type: 'textarea' },
+                { key: 'why.screen3.item2Title', label: 'Item 2 – Title', type: 'text' },
+                { key: 'why.screen3.item2Body', label: 'Item 2 – Body', type: 'textarea' },
+                { key: 'why.screen3.item3Title', label: 'Item 3 – Title', type: 'text' },
+                { key: 'why.screen3.item3Body', label: 'Item 3 – Body', type: 'textarea' },
+                { key: 'why.screen3.item4Title', label: 'Item 4 – Title', type: 'text' },
+                { key: 'why.screen3.item4Body', label: 'Item 4 – Body', type: 'textarea' }
+            ]},
+            { id: 'how-screen1', label: 'How – Screen 1', fields: [
+                { key: 'how.pathTitle', label: 'Path title', type: 'text' },
+                { key: 'how.screen1.headline', label: 'Headline', type: 'text' },
+                { key: 'how.screen1.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'how.screen1.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'how.screen1.milestone1Title', label: 'Milestone 1 – Title', type: 'text' },
+                { key: 'how.screen1.milestone1Body', label: 'Milestone 1 – Body', type: 'textarea' },
+                { key: 'how.screen1.milestone1Date', label: 'Milestone 1 – Date', type: 'text' },
+                { key: 'how.screen1.milestone2Title', label: 'Milestone 2 – Title', type: 'text' },
+                { key: 'how.screen1.milestone2Body', label: 'Milestone 2 – Body', type: 'textarea' },
+                { key: 'how.screen1.milestone2Date', label: 'Milestone 2 – Date', type: 'text' },
+                { key: 'how.screen1.milestone3Title', label: 'Milestone 3 – Title', type: 'text' },
+                { key: 'how.screen1.milestone3Body', label: 'Milestone 3 – Body', type: 'textarea' },
+                { key: 'how.screen1.milestone3Date', label: 'Milestone 3 – Date', type: 'text' },
+                { key: 'how.screen1.milestone4Title', label: 'Milestone 4 – Title', type: 'text' },
+                { key: 'how.screen1.milestone4Body', label: 'Milestone 4 – Body', type: 'textarea' },
+                { key: 'how.screen1.milestone4Date', label: 'Milestone 4 – Date', type: 'text' },
+                { key: 'how.screen1.milestone5Title', label: 'Milestone 5 – Title', type: 'text' },
+                { key: 'how.screen1.milestone5Body', label: 'Milestone 5 – Body', type: 'textarea' },
+                { key: 'how.screen1.milestone5Date', label: 'Milestone 5 – Date', type: 'text' }
+            ]},
+            { id: 'how-screen2', label: 'How – Screen 2', fields: [
+                { key: 'how.screen2.headline', label: 'Headline', type: 'text' },
+                { key: 'how.screen2.mainContent', label: 'Main content', type: 'textarea' },
+                { key: 'how.screen2.sectionLabel', label: 'Section label', type: 'text' },
+                { key: 'how.screen2.roles[0].title', label: 'Role 1 – Title', type: 'text' },
+                { key: 'how.screen2.roles[0].tagline', label: 'Role 1 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[0].body', label: 'Role 1 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[1].title', label: 'Role 2 – Title', type: 'text' },
+                { key: 'how.screen2.roles[1].tagline', label: 'Role 2 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[1].body', label: 'Role 2 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[2].title', label: 'Role 3 – Title', type: 'text' },
+                { key: 'how.screen2.roles[2].tagline', label: 'Role 3 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[2].body', label: 'Role 3 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[3].title', label: 'Role 4 – Title', type: 'text' },
+                { key: 'how.screen2.roles[3].tagline', label: 'Role 4 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[3].body', label: 'Role 4 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[4].title', label: 'Role 5 – Title', type: 'text' },
+                { key: 'how.screen2.roles[4].tagline', label: 'Role 5 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[4].body', label: 'Role 5 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[5].title', label: 'Role 6 – Title', type: 'text' },
+                { key: 'how.screen2.roles[5].tagline', label: 'Role 6 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[5].body', label: 'Role 6 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[6].title', label: 'Role 7 – Title', type: 'text' },
+                { key: 'how.screen2.roles[6].tagline', label: 'Role 7 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[6].body', label: 'Role 7 – Body', type: 'textarea' },
+                { key: 'how.screen2.roles[7].title', label: 'Role 8 – Title', type: 'text' },
+                { key: 'how.screen2.roles[7].tagline', label: 'Role 8 – Tagline', type: 'text' },
+                { key: 'how.screen2.roles[7].body', label: 'Role 8 – Body', type: 'textarea' }
+            ]},
+            { id: 'how-screen3', label: 'How – Screen 3', fields: [
+                { key: 'how.screen3.headline', label: 'Headline', type: 'text' },
+                { key: 'how.screen3.subhead', label: 'Subhead', type: 'textarea' },
+                { key: 'how.screen3.tabOverview', label: 'Tab – Overview', type: 'text' },
+                { key: 'how.screen3.tabCurrentYear', label: 'Tab – Current year suffix', type: 'text' },
+                { key: 'how.screen3.chartTitleOverview', label: 'Chart title (Overview)', type: 'text' },
+                { key: 'how.screen3.trackerLabelOverview', label: 'Tracker label (Overview)', type: 'text' },
+                { key: 'how.screen3.yearsRemainingLabel', label: 'Years remaining label', type: 'text' },
+                { key: 'how.screen3.chartTitleYear', label: 'Chart title (Year)', type: 'text' },
+                { key: 'how.screen3.yearChartSubtitle', label: 'Year chart subtitle', type: 'textarea' },
+                { key: 'how.screen3.trackerLabelYear', label: 'Tracker label (Year)', type: 'text' },
+                { key: 'how.screen3.thisYearLabel', label: 'This year label', type: 'text' },
+                { key: 'how.screen3.valueStart2025', label: 'Value start 2025 ($B)', type: 'number' },
+                { key: 'how.screen3.valueEnd2025', label: 'Value end 2025 ($B)', type: 'number' },
+                { key: 'how.screen3.ytd2026', label: 'YTD 2026 ($B)', type: 'number' },
+                { key: 'how.screen3.ytd2026JanShare', label: 'YTD 2026 Jan share (0–1)', type: 'number' },
+                { key: 'how.screen3.ytd2026FebShare', label: 'YTD 2026 Feb share (0–1)', type: 'number' }
+            ]}
+        ];
+
+        function getNested(obj, path) {
+            const parts = path.replace(/\]/g, '').split(/\.|\[/);
+            let cur = obj;
+            for (const p of parts) {
+                if (cur == null) return '';
+                const key = isNaN(Number(p)) ? p : Number(p);
+                cur = cur[key];
+            }
+            if (cur == null) return '';
+            return typeof cur === 'number' ? cur : String(cur);
+        }
+
+        function setNested(obj, path, value) {
+            const parts = path.replace(/\]/g, '').split(/\.|\[/);
+            let cur = obj;
+            for (let i = 0; i < parts.length - 1; i++) {
+                const p = parts[i];
+                const nextKey = parts[i + 1];
+                const key = isNaN(Number(p)) ? p : Number(p);
+                const nextIsNum = !isNaN(Number(nextKey));
+                if (cur[key] == null) cur[key] = nextIsNum ? [] : {};
+                cur = cur[key];
+            }
+            const lastKey = parts[parts.length - 1];
+            const key = isNaN(Number(lastKey)) ? lastKey : Number(lastKey);
+            if (typeof value === 'number' && !isNaN(value)) cur[key] = value;
+            else if (typeof value === 'boolean') cur[key] = value;
+            else cur[key] = value == null ? '' : String(value);
+        }
+
+        function parseTimeToSeconds(str) {
+            if (str == null || str === '') return 0;
+            const s = String(str).trim();
+            if (/^\d+$/.test(s)) return Math.max(0, parseInt(s, 10));
+            const parts = s.split(':').map(p => parseInt(p, 10));
+            if (parts.some(n => isNaN(n))) return 0;
+            if (parts.length === 2) return Math.max(0, parts[0] * 60 + parts[1]);
+            if (parts.length === 3) return Math.max(0, parts[0] * 3600 + parts[1] * 60 + parts[2]);
+            return 0;
+        }
+        function formatSecondsToTime(sec) {
+            if (sec == null || isNaN(sec) || sec < 0) return '';
+            const n = Math.floor(Number(sec));
+            if (n === 0) return '0';
+            const m = Math.floor(n / 60);
+            const s = n % 60;
+            if (m === 0) return String(s);
+            return s > 0 ? m + ':' + (s < 10 ? '0' : '') + s : String(m);
+        }
+
+        function formatTimestamp() {
+            const d = new Date();
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        function canonicalStringify(obj) {
+            if (obj === null || typeof obj !== 'object') return JSON.stringify(obj);
+            if (Array.isArray(obj)) return '[' + obj.map(canonicalStringify).join(',') + ']';
+            var keys = Object.keys(obj).sort();
+            return '{' + keys.map(function(k) { return JSON.stringify(k) + ':' + canonicalStringify(obj[k]); }).join(',') + '}';
+        }
+        function setMessage(text, isError) {
+            const ts = formatTimestamp();
+            const withTs = text + ' · ' + ts;
+            footerStatusEl.innerHTML = '';
+            footerStatusEl.textContent = withTs;
+            footerStatusEl.className = 'text-sm min-w-0 truncate flex items-center ' + (isError ? 'text-red-400' : 'text-green-400');
+        }
+        function setSavingMessage() {
+            const ts = formatTimestamp();
+            footerStatusEl.innerHTML = '<span class="cms-spinner" aria-hidden="true"></span><span>Saving… · ' + ts + '</span>';
+            footerStatusEl.className = 'text-sm min-w-0 truncate flex items-center text-amber-400';
+        }
+
+        function getScreen() {
+            return SCREENS.find(s => s.id === currentScreenId) || SCREENS[0];
+        }
+
+        function setSaveButtonState() {
+            const saveBtn = document.getElementById('btn-save');
+            const clearBtn = document.getElementById('btn-clear');
+            if (saveBtn) saveBtn.disabled = !isDirty;
+            if (clearBtn) clearBtn.classList.toggle('hidden', !isDirty);
+        }
+
+        function setDirty() {
+            isDirty = true;
+            setSaveButtonState();
+        }
+
+        function clearDirty() {
+            isDirty = false;
+            setSaveButtonState();
+        }
+
+        function renderForm() {
+            formPanel.innerHTML = '';
+            if (!fullContent) {
+                formPanel.innerHTML = '<p class="text-slate-400">Load content first.</p>';
+                return;
+            }
+            const screen = getScreen();
+            for (const field of screen.fields) {
+                const val = getNested(fullContent, field.key);
+                const wrap = document.createElement('div');
+                wrap.className = 'space-y-1';
+                const label = document.createElement('label');
+                label.className = 'block text-sm font-medium text-slate-300';
+                label.textContent = field.label;
+                label.setAttribute('for', 'field-' + field.key.replace(/[\.\[\]]/g, '-'));
+                wrap.appendChild(label);
+                if (field.type === 'textarea') {
+                    const el = document.createElement('textarea');
+                    el.id = 'field-' + field.key.replace(/[\.\[\]]/g, '-');
+                    el.name = field.key;
+                    el.setAttribute('data-key', field.key);
+                    el.className = 'w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none resize-y min-h-[80px]';
+                    el.value = val;
+                    wrap.appendChild(el);
+                } else if (field.type === 'boolean') {
+                    const el = document.createElement('select');
+                    el.id = 'field-' + field.key.replace(/[\.\[\]]/g, '-');
+                    el.name = field.key;
+                    el.setAttribute('data-key', field.key);
+                    el.className = 'w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none';
+                    const truthy = /^(1|true|yes)$/i.test(String(val).trim());
+                    el.innerHTML = '<option value="false">No</option><option value="true">Yes</option>';
+                    el.value = truthy ? 'true' : 'false';
+                    wrap.appendChild(el);
+                } else if (field.type === 'time') {
+                    const el = document.createElement('input');
+                    el.id = 'field-' + field.key.replace(/[\.\[\]]/g, '-');
+                    el.name = field.key;
+                    el.setAttribute('data-key', field.key);
+                    el.type = 'text';
+                    el.placeholder = 'e.g. 1:30 or 90';
+                    el.className = 'w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none';
+                    const numVal = typeof val === 'number' ? val : parseTimeToSeconds(val);
+                    el.value = formatSecondsToTime(numVal) || (val != null && val !== '' ? String(val) : '');
+                    wrap.appendChild(el);
+                } else {
+                    const el = document.createElement('input');
+                    el.id = 'field-' + field.key.replace(/[\.\[\]]/g, '-');
+                    el.name = field.key;
+                    el.setAttribute('data-key', field.key);
+                    el.type = field.type === 'number' ? 'number' : 'text';
+                    el.className = 'w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none';
+                    el.value = val;
+                    if (field.type === 'number') {
+                        el.step = field.key.indexOf('Share') !== -1 ? '0.01' : '1';
+                    }
+                    wrap.appendChild(el);
+                }
+                formPanel.appendChild(wrap);
+            }
+            setSaveButtonState();
+        }
+
+        function collectCurrentFormIntoContent() {
+            if (!fullContent) return;
+            const screen = getScreen();
+            for (const field of screen.fields) {
+                const el = formPanel.querySelector('[data-key="' + field.key + '"]');
+                if (!el) continue;
+                let val = el.value;
+                if (field.type === 'number') {
+                    const n = parseFloat(val);
+                    val = isNaN(n) ? 0 : n;
+                } else if (field.type === 'boolean') {
+                    val = val === 'true';
+                } else if (field.type === 'time') {
+                    val = parseTimeToSeconds(val);
+                }
+                setNested(fullContent, field.key, val);
+            }
+        }
+
+        function mergeDefaultsIntoContent(data, defaultData) {
+            if (!data || !defaultData || typeof data !== 'object' || typeof defaultData !== 'object') return data;
+            SCREENS.forEach(function(screen) {
+                (screen.fields || []).forEach(function(field) {
+                    var key = field.key;
+                    var curVal = getNested(data, key);
+                    var defVal = getNested(defaultData, key);
+                    if ((curVal === '' || curVal === undefined) && defVal !== '' && defVal !== undefined) {
+                        var toSet = defVal;
+                        if (field.type === 'number' || field.type === 'time') toSet = parseFloat(defVal) || 0;
+                        else if (field.type === 'boolean') toSet = /^(1|true|yes)$/i.test(String(defVal));
+                        setNested(data, key, toSet);
+                    }
+                });
+            });
+            return data;
+        }
+
+        function load() {
+            var locale = getCmsLocale();
+            var contentPromise = fetch(apiBase + '/api/content?locale=' + encodeURIComponent(locale))
+                .then(r => {
+                    const isJson = (r.headers.get('Content-Type') || '').toLowerCase().includes('application/json');
+                    if (!r.ok || !isJson) {
+                        throw new Error(r.ok ? 'Response was not JSON' : 'Content API not available. Run locally with the Node server or check production API.');
+                    }
+                    return r.json();
+                });
+            var defaultPromise = fetch(apiBase + '/api/content/default?locale=' + encodeURIComponent(locale))
+                .then(r => r.ok ? r.json() : null)
+                .catch(function() { return null; });
+            Promise.all([contentPromise, defaultPromise])
+                .then(function(results) {
+                    var data = results[0];
+                    var defaultData = results[1];
+                    if (defaultData) mergeDefaultsIntoContent(data, defaultData);
+                    fullContent = data;
+                    clearDirty();
+                    setMessage('Loaded', false);
+                    renderForm();
+                    loadPreviewInIframe();
+                })
+                .catch(err => {
+                    setMessage(err.message || 'Failed to load', true);
+                });
+        }
+
+        function save() {
+            if (!fullContent || typeof fullContent !== 'object' || !fullContent.home || !fullContent.what || !fullContent.why || !fullContent.how) {
+                setMessage('Load content first, or content is invalid.', true);
+                return;
+            }
+            var saveBtn = document.getElementById('btn-save');
+            if (saveBtn) saveBtn.disabled = true;
+            setSavingMessage();
+            collectCurrentFormIntoContent();
+            var locale = getCmsLocale();
+            var body = { locale: locale, home: fullContent.home, what: fullContent.what, why: fullContent.why, how: fullContent.how };
+            fetch(apiBase + '/api/content', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
+                .then(r => {
+                    const isJson = (r.headers.get('Content-Type') || '').toLowerCase().includes('application/json');
+                    if (!isJson) return r.text().then(() => ({ ok: false, body: { error: 'Response was not JSON' } }));
+                    return r.json().then(body => ({ ok: r.ok, body }));
+                })
+                .then(({ ok, body }) => {
+                    if (!ok) {
+                        if (saveBtn) saveBtn.disabled = !isDirty;
+                        setMessage('Save failed: ' + (body.error || body.message || 'Unknown error'), true);
+                        return;
+                    }
+                    var savedCanonical = canonicalStringify(fullContent);
+                    var pollAttempt = 0;
+                    var maxPollAttempts = 8;
+                    var pollDelayMs = 400;
+                    function tryReload() {
+                        return fetch(apiBase + '/api/content?locale=' + encodeURIComponent(locale))
+                            .then(r => {
+                                var ct = (r.headers.get('Content-Type') || '').toLowerCase();
+                                if (!r.ok || !ct.includes('application/json')) throw new Error('Could not reload');
+                                return r.json();
+                            })
+                            .then(function(data) {
+                                var match = canonicalStringify(data) === savedCanonical;
+                                if (match || pollAttempt >= maxPollAttempts) {
+                                    fullContent = data;
+                                    renderForm();
+                                    refreshPreviewIframe(function() {
+                                        clearDirty();
+                                        setMessage('Saved', false);
+                                    });
+                                    return;
+                                }
+                                pollAttempt++;
+                                return new Promise(function(resolve) { setTimeout(resolve, pollDelayMs); }).then(tryReload);
+                            });
+                    }
+                    return tryReload().catch(function() {
+                        clearDirty();
+                        setMessage('Saved', false);
+                        refreshPreviewIframe();
+                        if (saveBtn) saveBtn.disabled = true;
+                    });
+                })
+                .catch(err => {
+                    if (saveBtn) saveBtn.disabled = !isDirty;
+                    setMessage('Failed to save: ' + (err.message || 'Unknown'), true);
+                });
+        }
+
+        function setActiveNav() {
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                const isActive = btn.getAttribute('data-screen') === currentScreenId;
+                btn.classList.toggle('bg-blue-600/30', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('text-slate-300', !isActive);
+            });
+        }
+        function openDrawer() {
+            document.getElementById('drawer-overlay').classList.add('drawer-open');
+            document.getElementById('drawer-overlay').setAttribute('aria-hidden', 'false');
+        }
+        function closeDrawer() {
+            document.getElementById('drawer-overlay').classList.remove('drawer-open');
+            document.getElementById('drawer-overlay').setAttribute('aria-hidden', 'true');
+        }
+        function handleNavClick(btn) {
+            const targetScreenId = btn.getAttribute('data-screen');
+            if (targetScreenId === currentScreenId) {
+                closeDrawer();
+                return;
+            }
+            if (isDirty) {
+                if (!confirm('You have unsaved changes. Leave without saving?')) return;
+                clearDirty();
+            }
+            currentScreenId = targetScreenId;
+            setActiveNav();
+            if (fullContent) renderForm();
+            loadPreviewInIframe();
+            closeDrawer();
+        }
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.addEventListener('click', () => handleNavClick(btn));
+        });
+        document.getElementById('btn-menu').addEventListener('click', () => openDrawer());
+        document.getElementById('drawer-backdrop').addEventListener('click', closeDrawer);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('drawer-overlay').classList.contains('drawer-open')) closeDrawer();
+        });
+        window.addEventListener('resize', () => {
+            if (window.matchMedia('(min-width: 768px)').matches) closeDrawer();
+        });
+
+        formPanel.addEventListener('input', setDirty);
+        formPanel.addEventListener('change', setDirty);
+
+        document.getElementById('btn-clear').addEventListener('click', () => { load(); });
+        document.getElementById('btn-save').addEventListener('click', save);
+        setActiveNav();
+        load();
+        var cmsLocaleEl = document.getElementById('cms-locale');
+        if (cmsLocaleEl) cmsLocaleEl.addEventListener('change', load);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') load();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/content.mjs": {
+      "includeFiles": "content.default*.json"
+    },
+    "api/content/default.mjs": {
+      "includeFiles": "content.default*.json"
+    }
+  }
+}

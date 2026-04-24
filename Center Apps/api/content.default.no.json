@@ -1,0 +1,155 @@
+{
+  "home": {
+    "title": "Cognites MoonShot",
+    "subtitlePrefix": "",
+    "subtitleHighlight": "100x35",
+    "subtitleSuffix": ": 100 milliarder dollar i realisert kundeverdi innen 2035 – og hvordan hver Cogniter bidrar.",
+    "shareButtonText": "Del",
+    "pathCards": [
+      { "title": "Hva er 100 × 35?", "subtitle": "Forstå oppdraget" },
+      { "title": "Hvorfor betyr det noe for deg?", "subtitle": "Oppdag effekten" },
+      { "title": "Hvordan når vi dit?", "subtitle": "Utforsk veikartet" }
+    ]
+  },
+  "what": {
+    "pathTitle": "Hva er 100 × 35?",
+    "breadcrumb": "Hva",
+    "screen1": {
+      "headline": "Hva er 100 x 35?",
+      "mainContent": "Cognite vil levere 100 milliarder dollar i realisert kundeverdi innen 2035.",
+      "highlightPhrase": "realisert kundeverdi",
+      "cardTitle": "100X35 er ikke bare et slagord",
+      "cardBody": "Det er vårt løfte til deg i en verden der de fleste AI- og datainitiativer aldri når reell forretningseffekt. 100 × 35 sier at Cognite er i ferd med *å levere reell forretningseffekt* – fra piloter til målbare resultater for kunden.",
+      "videoId": "_YjpgQIX7is",
+      "videoStartTime": 0,
+      "videoAutoplay": false
+    },
+    "screen2": {
+      "headline": "Realisert kundeverdi, ikke bare potensiale",
+      "mainContent": "Spor, kvantifiser og bevise verdi – i skala – på tvers av hele kundebasen.",
+      "sectionLabel": "Kjerneverdier",
+      "principle1Title": "Din verdi, ikke vår fortjeneste.",
+      "principle1Body": "Effekt for kundenes resultat (inntekter, kostnader, risiko, bærekraft), ikke bare interne målinger.",
+      "principle2Title": "Målt, ikke ønsket.",
+      "principle2Body": "Vi samarbeider med kunder for å sikre kvantifiserte resultater, ikke bare «følelsen» av forbedring.",
+      "principle3Title": "Realisert, ikke estimert.",
+      "principle3Body": "Verdi som faktisk har materialisert seg i kundens drift, ikke bare i en presentasjon."
+    },
+    "screen3": {
+      "headline": "5 nivåer for å spore verdi",
+      "sectionLabel": "Reisen til bevis",
+      "level1Title": "Verdi estimert",
+      "level1Body": "Cognites første anslag på hva en use case kan levere.",
+      "level2Title": "Kunde enig",
+      "level2Body": "Kunden har vurdert og godt verdiestimatet.",
+      "level3Title": "Verdi realisert",
+      "level3Body": "Estimat av verdi allerede realisert basert på tidlige data.",
+      "level4Title": "Verdi målt",
+      "level4Body": "Vi måler realisert verdi sammen med kunden.",
+      "level5Title": "Verdi offentlig",
+      "level5Body": "Kunden godtar å dele den målte effekten offentlig."
+    }
+  },
+  "why": {
+    "pathTitle": "Hvorfor 100 × 35 betyr noe",
+    "breadcrumb": "Hvorfor det betyr noe",
+    "screen1": {
+      "headline": "Hvorfor 100 × 35 betyr noe",
+      "mainContent": "Når AI og data blir kritisk for alle bransjer, er feilkostnaden ikke lenger akseptabel. Selskaper trenger partnere som kan levere bevist verdi.",
+      "sectionLabel": "Den harde virkeligheten",
+      "trueCostTitle": "Den sanne kostnaden",
+      "trueCostBody": "Denne feilraten representerer mer enn bortkastet investering – det er tapt mulighet og svekket tillit.",
+      "bullet1": "Milliarder i sunke kostnader uten avkastning",
+      "bullet2": "Forsinket digital transformasjon",
+      "bullet3": "Utbrenthet og initiativtretthet",
+      "bullet4": "Tap av konkurransefortrinn"
+    },
+    "screen2": {
+      "headline": "Verdibekreftelse er vår differensiator",
+      "mainContent": "Mens bransjen sliter med høy feilrate, sikrer Cognites verdibekreftelse at hvert initiativ leverer målbare resultater.",
+      "sectionLabel": "Søyler for verdibekreftelse",
+      "pillar1From": "Teknologi-først",
+      "pillar1To": "Verdi-først",
+      "pillar1Body": "Hver beslutning starter med forretningseffekt.",
+      "pillar2From": "Pilot suksess",
+      "pillar2To": "Skalert effekt",
+      "pillar2Body": "Suksess måles på adopsjon på tvers av virksomheten.",
+      "pillar3From": "Leverandørløfter",
+      "pillar3To": "Kundevalidering",
+      "pillar3Body": "Verdi valideres av kunden.",
+      "pillar4From": "Uklare målinger",
+      "pillar4To": "Transparente KPI-er",
+      "pillar4Body": "Tydelige, målbare bevis på forretningseffekt."
+    },
+    "screen3": {
+      "headline": "Kulturskifte",
+      "mainContent": "100 × 35 endrer hvordan vi tenker og jobber. «Verdi» er ikke ett teams ansvar – det er vårt felles operativsystem.",
+      "sectionLabel": "Atferdsendring",
+      "item1Title": "I hver samtale",
+      "item1Body": "Salg, produkt og leveranse starter med verdi.",
+      "item2Title": "I prosjektplanlegging",
+      "item2Body": "Hvert initiativ må definere sin verdihistorie.",
+      "item3Title": "I resultatvurderinger",
+      "item3Body": "Suksess måles på levert kundeverdi.",
+      "item4Title": "I feiringer",
+      "item4Body": "Vi feirer validerte verdihistorier."
+    }
+  },
+  "how": {
+    "pathTitle": "Hvordan vi når dit",
+    "breadcrumb": "Hvordan vi når dit",
+    "screen1": {
+      "headline": "Hvordan vi når 100 mrd dollar innen 2035",
+      "mainContent": "oppnås gjennom systematiske prosesser og kontinuerlig læring.",
+      "sectionLabel": "Nøkkelmilepæler",
+      "milestone1Title": "Milepæl 1",
+      "milestone1Body": "Lansere Value Launchpad på tvers av alle kundeengasjementer.",
+      "milestone1Date": "Q1 2024",
+      "milestone2Title": "Milepæl 2",
+      "milestone2Body": "Oppnå 50+ nivå 4 verdihistorier med validert effekt.",
+      "milestone2Date": "Q3 2025",
+      "milestone3Title": "Milepæl 3",
+      "milestone3Body": "Rulle ut verdidashboard på tvers av selskapet.",
+      "milestone3Date": "Q4 2028",
+      "milestone4Title": "Milepæl 4",
+      "milestone4Body": "Bibliotek med 200+ repliserbare verdiblåkopier.",
+      "milestone4Date": "Q2 2032",
+      "milestone5Title": "Milepæl 5",
+      "milestone5Body": "Nå 100 mrd dollar i kumulativ kundeverdi.",
+      "milestone5Date": "Des 2035"
+    },
+    "screen2": {
+      "headline": "Det krever oss alle",
+      "mainContent": "Hver Cogniter har en rolle i 100 × 35. Slik bidrar ulike roller til å frigjøre verdi.",
+      "sectionLabel": "Rollemandater",
+      "roles": [
+        { "title": "Account Executive", "tagline": "Verdiens arkitekt", "body": "Bruker Value Launchpad for å ramme inn avtaler rundt forretningsresultater." },
+        { "title": "Product Manager", "tagline": "Verdiens bygger", "body": "Prioriterer funksjoner som driver målbare resultater." },
+        { "title": "Project Manager", "tagline": "Verdiens leverandør", "body": "Kjører prosjekter mot forretningsmål." },
+        { "title": "Engineer / Data Scientist", "tagline": "Verdiens designer", "body": "Gjør data og modeller til resultater." },
+        { "title": "CBE / TAM", "tagline": "Verdiens akselerator", "body": "Overvåker adopsjon og kobler ytelse til forretningsresultater." },
+        { "title": "Marketing", "tagline": "Verdiens historieforteller", "body": "Gjør nivå 5-suksesser om til offentlige historier." },
+        { "title": "P&O Partner", "tagline": "Verdikultur", "body": "Rekrutterer og utvikler talent som tenker i kundeverdi." },
+        { "title": "Finance Partner", "tagline": "Verdiens vokter", "body": "Tilpasser kommersielle modeller til kundesuksess." }
+      ]
+    },
+    "screen3": {
+      "headline": "Kundeverdi til dags dato",
+      "subhead": "Fremgang mot 100 mrd dollar realisert kundeverdi innen 2035.",
+      "tabOverview": "Oversikt",
+      "tabCurrentYear": "(nåværende år)",
+      "chartTitleOverview": "Tidslinje og verdi",
+      "trackerLabelOverview": "Realisert kundeverdi",
+      "yearsRemainingLabel": "år igjen",
+      "chartTitleYear": "fremgang",
+      "yearChartSubtitle": "Månedlig realisert kundeverdi (mrd $).",
+      "trackerLabelYear": "Realisert kundeverdi",
+      "thisYearLabel": "i år",
+      "valueStart2025": 5,
+      "valueEnd2025": 22,
+      "ytd2026": 7,
+      "ytd2026JanShare": 0.37,
+      "ytd2026FebShare": 0.63
+    }
+  }
+}
