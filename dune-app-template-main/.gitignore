@@ -1,0 +1,13 @@
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Legacy config (replaced by .env files)
+/cdf.json
+
+/node_modules
+
+/dist

@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "cdf-datamodeling-mcp": {
+      "command": "npx cdf-datamodelling-mcp-server"
+    }
+  }
+}

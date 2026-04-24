@@ -1,0 +1,12 @@
+{
+  "name": "CDF Site Configuration & Onboarding",
+  "description": "CDF Site preperation & data consumption pipeline and site launch utility",
+  "externalId": "new-test-integration",
+  "versionTag": "0.0.1",
+  "deployment": {
+    "org": "cog-demo",
+    "project": "lervik-industries",
+    "baseUrl": "https://api.cognitedata.com",
+    "published": true
+  }
+}

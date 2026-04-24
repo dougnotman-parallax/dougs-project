@@ -1,0 +1,18 @@
+---
+description: Always apply dune-ui-foundation skill for project UI work
+alwaysApply: true
+---
+
+# Dune UI Foundation Skill Requirement
+
+For this project, always use the `dune-ui-foundation` skill before implementing changes, updates, or enhancements.
+
+## Required behavior
+
+1. Read `~/.cursor/skills/dune-ui-foundation/SKILL.md` at the start of implementation tasks.
+2. Follow the foundation guidance in `reference.md` for styling, animation, and interaction-state decisions.
+3. Keep new UI changes consistent with the established catalog unless the user explicitly requests an intentional deviation.
+
+## Scope
+
+This applies to all feature work, refinements, and maintenance updates in this repository.
